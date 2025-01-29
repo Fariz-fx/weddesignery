@@ -254,7 +254,7 @@ export const InvitationForm = () => {
           document={<PDFPreview formData={formData} />}
           fileName={`wedding-invitation-${formData.brideNames}-${formData.groomNames}.pdf`}
         >
-          {({ loading }) => (
+          {({ loading }: { loading: boolean }) => (
             <Button
               disabled={loading}
               className="bg-wedding-primary hover:bg-wedding-secondary text-wedding-text px-8 py-2"
