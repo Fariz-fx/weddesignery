@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import React, { forwardRef } from 'react';
+import { backgroundTemplates } from "@/lib/background-templates";
 
 interface PDFPreviewProps {
     formData: {
@@ -19,6 +20,8 @@ interface PDFPreviewProps {
         backgroundColor:string;
          textColor:string;
          backgroundTemplate:string;
+         brideNameColor:string,
+          groomNameColor:string
     };
 }
 
@@ -50,9 +53,13 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
         return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(text)}&dates=${startTime}/${endTime}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(formData.venue)}`
     };
 
-
+   const selectedTemplate = backgroundTemplates.find(template => template.value === formData.backgroundTemplate);
+   const backgroundImageStyle = selectedTemplate?.image ? { backgroundImage: `url(${selectedTemplate.image})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat' ,
+       } : {};
     return (
-        <Card className="p-8 shadow-lg min-h-[600px] animate-fadeIn" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8' }}>
+        <Card className="p-8 shadow-lg min-h-[600px] animate-fadeIn" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8',  ...backgroundImageStyle }}>
             <div className="text-center space-y-6">
                 <div  style={{color: formData.textColor || '#333333' }}>
                     {formData.personalizeInvitation && formData.inviteeName && (
@@ -62,13 +69,13 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                     <h1 className="text-3xl font-semibold mb-2" style={{color: formData.textColor || '#333333'}}>Wedding Invitation</h1>
 
                     <div className="my-8">
-                        <p className="text-2xl text-wedding-primary"  style={{color:'#FFC0CB'}}>
+                        <p className="text-2xl  "  style={{color: formData.brideNameColor || '#FFC0CB'}}>
                             {formData.brideNames}
                         </p>
                          {formData.brideQualification && <p className="text-sm italic"  style={{color: formData.textColor || '#333333'}}>{formData.brideQualification}</p>}
 
                         <p className="text-xl" style={{color: formData.textColor || '#333333'}}>&</p>
-                        <p className="text-2xl text-wedding-primary"  style={{color:'#FFC0CB'}}>
+                        <p className="text-2xl   "  style={{color: formData.groomNameColor || '#FFC0CB'}}>
                             {formData.groomNames}
                         </p>
                         {formData.groomQualification && <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>{formData.groomQualification}</p>}

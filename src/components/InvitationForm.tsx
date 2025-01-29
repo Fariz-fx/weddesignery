@@ -23,6 +23,7 @@ import {
     TooltipTrigger
 } from "@/components/ui/tooltip";
 import { ColorPicker } from "@/components/ui/color-picker";
+import { backgroundTemplates } from "@/lib/background-templates";
 interface FormData {
     brideNames: string;
     groomNames: string;
@@ -40,6 +41,8 @@ interface FormData {
     backgroundColor: string;
     textColor:string;
     backgroundTemplate:string;
+    brideNameColor:string,
+    groomNameColor:string
 }
 
 export const InvitationForm = () => {
@@ -61,6 +64,8 @@ export const InvitationForm = () => {
         backgroundColor: "#ffffff",
         textColor: "#333333",
         backgroundTemplate: "white",
+        brideNameColor: "#FFC0CB",
+         groomNameColor: "#FFC0CB",
 
     });
 
@@ -89,6 +94,12 @@ export const InvitationForm = () => {
     };
     const handleBackgroundColorChange = (color: string) => {
         setFormData((prev) => ({ ...prev, backgroundColor: color }));
+    };
+    const handleBrideNameColorChange = (color: string) => {
+        setFormData((prev) => ({ ...prev, brideNameColor: color }));
+    };
+    const handleGroomNameColorChange = (color: string) => {
+         setFormData((prev) => ({ ...prev, groomNameColor: color }));
     };
 
 
@@ -197,10 +208,9 @@ export const InvitationForm = () => {
                                           <SelectValue placeholder="Select background" />
                                          </SelectTrigger>
                                          <SelectContent>
-                                           <SelectItem value="white">White</SelectItem>
-                                             <SelectItem value="#f0f0f0">Light Gray</SelectItem>
-                                              <SelectItem value="#e0eaf6">Light Blue</SelectItem>
-                                           <SelectItem value="#f8f0e3">Light Yellow</SelectItem>
+                                            {backgroundTemplates.map((template)=> (
+                                                 <SelectItem key={template.value} value={template.value}>{template.label}</SelectItem>
+                                            ))}
                                         </SelectContent>
                                   </Select>
                            </div>
@@ -210,6 +220,22 @@ export const InvitationForm = () => {
                                         id="textColor"
                                          value={formData.textColor}
                                          onValueChange={handleTextColorChange}
+                                      />
+                            </div>
+                              <div>
+                                 <Label htmlFor="brideNameColor">Bride Name Color</Label>
+                                <ColorPicker
+                                        id="brideNameColor"
+                                         value={formData.brideNameColor}
+                                         onValueChange={handleBrideNameColorChange}
+                                      />
+                            </div>
+                             <div>
+                                 <Label htmlFor="groomNameColor">Groom Name Color</Label>
+                                <ColorPicker
+                                        id="groomNameColor"
+                                         value={formData.groomNameColor}
+                                         onValueChange={handleGroomNameColorChange}
                                       />
                             </div>
                                <div>
