@@ -12,9 +12,6 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { PDFPreview } from "./PDFPreview";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { AddToCalendarButton } from 'add-to-calendar-button-react';
-import { pdfThemes } from "@/utils/pdfThemes";
 
 interface FormData {
   brideNames: string;
@@ -24,7 +21,6 @@ interface FormData {
   venue: string;
   mapUrl: string;
   theme: string;
-  designTheme: string;
   personalizeInvitation: boolean;
   inviteeName: string;
   personalMessage: string;
@@ -40,7 +36,6 @@ export const InvitationForm = () => {
     venue: "",
     mapUrl: "",
     theme: "family",
-    designTheme: "default",
     personalizeInvitation: false,
     inviteeName: "",
     personalMessage: "",
@@ -57,21 +52,16 @@ export const InvitationForm = () => {
     setFormData((prev) => ({ ...prev, theme: value }));
   };
 
-  const handleDesignThemeChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, designTheme: value }));
-  };
-
   const handlePersonalizationToggle = (checked: boolean) => {
     setFormData((prev) => ({ ...prev, personalizeInvitation: checked }));
   };
 
-  const formatTimeWithAMPM = (time: string) => {
-    if (!time) return "";
-    const [hours, minutes] = time.split(":");
-    const hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    const formattedHour = hour % 12 || 12;
-    return `${formattedHour}:${minutes} ${ampm}`;
+  const handleGeneratePDF = () => {
+    // TODO: Implement PDF generation
+    toast({
+      title: "Success!",
+      description: "Your invitation PDF has been generated.",
+    });
   };
 
   return (
@@ -114,21 +104,6 @@ export const InvitationForm = () => {
               onChange={handleInputChange}
               className="border-wedding-secondary"
             />
-            {formData.date && (
-              <div className="mt-2">
-                <AddToCalendarButton
-                  name={`Wedding of ${formData.brideNames} & ${formData.groomNames}`}
-                  description={`You are cordially invited to the wedding of ${formData.brideNames} & ${formData.groomNames}`}
-                  startDate={formData.date}
-                  startTime={formData.time}
-                  endTime={formData.time}
-                  location={formData.venue}
-                  options={['Google']}
-                  buttonStyle="default"
-                  lightMode="light"
-                />
-              </div>
-            )}
           </div>
 
           <div>
@@ -141,11 +116,6 @@ export const InvitationForm = () => {
               onChange={handleInputChange}
               className="border-wedding-secondary"
             />
-            {formData.time && (
-              <p className="text-sm text-gray-600 mt-1">
-                {formatTimeWithAMPM(formData.time)}
-              </p>
-            )}
           </div>
 
           <div>
@@ -186,24 +156,6 @@ export const InvitationForm = () => {
                 <SelectItem value="friends">Best Friends</SelectItem>
                 <SelectItem value="work">Work Colleagues</SelectItem>
                 <SelectItem value="neighbors">Neighbors</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="designTheme">Design Theme</Label>
-            <Select
-              value={formData.designTheme}
-              onValueChange={handleDesignThemeChange}
-            >
-              <SelectTrigger className="border-wedding-secondary">
-                <SelectValue placeholder="Select design" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default">Default</SelectItem>
-                <SelectItem value="elegant">Elegant</SelectItem>
-                <SelectItem value="romantic">Romantic</SelectItem>
-                <SelectItem value="modern">Modern</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -250,19 +202,12 @@ export const InvitationForm = () => {
       </div>
 
       <div className="flex justify-center pt-6">
-        <PDFDownloadLink
-          document={<PDFPreview formData={formData} />}
-          fileName={`wedding-invitation-${formData.brideNames}-${formData.groomNames}.pdf`}
+        <Button
+          onClick={handleGeneratePDF}
+          className="bg-wedding-primary hover:bg-wedding-secondary text-wedding-text px-8 py-2"
         >
-          {({ loading }: { loading: boolean }) => (
-            <Button
-              disabled={loading}
-              className="bg-wedding-primary hover:bg-wedding-secondary text-wedding-text px-8 py-2"
-            >
-              {loading ? "Generating PDF..." : "Download PDF"}
-            </Button>
-          )}
-        </PDFDownloadLink>
+          Generate PDF
+        </Button>
       </div>
     </div>
   );
