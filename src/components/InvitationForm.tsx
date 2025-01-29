@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,13 +11,17 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { PDFPreview } from "./PDFPreview";
+import { saveAs } from 'file-saver';
+import  html2canvas from 'html2canvas';
+import PDFPreview from "./PDFPreview";
 
 interface FormData {
   brideNames: string;
   groomNames: string;
   date: string;
   time: string;
+  brideQualification: string;
+  groomQualification: string;
   venue: string;
   mapUrl: string;
   theme: string;
@@ -33,6 +37,8 @@ export const InvitationForm = () => {
     groomNames: "",
     date: "",
     time: "",
+    brideQualification: "",
+    groomQualification: "",
     venue: "",
     mapUrl: "",
     theme: "family",
@@ -56,12 +62,36 @@ export const InvitationForm = () => {
     setFormData((prev) => ({ ...prev, personalizeInvitation: checked }));
   };
 
-  const handleGeneratePDF = () => {
-    // TODO: Implement PDF generation
+  const pdfPreviewRef = useRef<HTMLDivElement>(null);
+
+ const handleGeneratePDF = async () => {
+  if (!pdfPreviewRef.current) {
     toast({
-      title: "Success!",
+      title: "Error!",
+      description: "Could not locate the invitation preview.",
+      variant: "destructive",
+    });
+    return;
+  }
+    try {
+
+      const canvas = await html2canvas(pdfPreviewRef.current, {
+        scale: 2, // Increase scale for better resolution
+      });
+    
+        const dataUrl = canvas.toDataURL('image/png');
+        saveAs(dataUrl, "invitation.png");
+
+
+      toast({
+      title: "Success",
       description: "Your invitation PDF has been generated.",
     });
+    
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      toast({ title: "Failed", description: "Failed to generate the PDF.", variant: "destructive" });
+    }
   };
 
   return (
@@ -95,6 +125,18 @@ export const InvitationForm = () => {
           </div>
 
           <div>
+            <Label htmlFor="brideQualification">Bride's Qualification</Label>
+            <Input
+              id="brideQualification"
+              name="brideQualification"
+              value={formData.brideQualification}
+              onChange={handleInputChange}
+              className="border-wedding-secondary"
+              placeholder="e.g., Software Engineer"
+            />
+          </div>
+
+           <div>
             <Label htmlFor="date">Wedding Date</Label>
             <Input
               id="date"
@@ -106,6 +148,17 @@ export const InvitationForm = () => {
             />
           </div>
 
+          <div>
+             <Label htmlFor="groomQualification">Groom's Qualification</Label>
+              <Input
+               id="groomQualification"
+                name="groomQualification"
+                value={formData.groomQualification}
+               onChange={handleInputChange}
+               className="border-wedding-secondary"
+                placeholder="e.g., Doctor"
+             />
+          </div>
           <div>
             <Label htmlFor="time">Wedding Time</Label>
             <Input
@@ -154,8 +207,11 @@ export const InvitationForm = () => {
               <SelectContent>
                 <SelectItem value="family">Close Family</SelectItem>
                 <SelectItem value="friends">Best Friends</SelectItem>
-                <SelectItem value="work">Work Colleagues</SelectItem>
+                 <SelectItem value="work">Work Colleagues</SelectItem>
                 <SelectItem value="neighbors">Neighbors</SelectItem>
+                 <SelectItem value="elegant">Elegant</SelectItem>
+                <SelectItem value="modern">Modern</SelectItem>
+                <SelectItem value="rustic">Rustic</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -188,16 +244,16 @@ export const InvitationForm = () => {
                   name="personalMessage"
                   value={formData.personalMessage}
                   onChange={handleInputChange}
-                  className="border-wedding-secondary"
+                   className="border-wedding-secondary"
                   placeholder="Add a personal message..."
                 />
               </div>
             </>
           )}
-        </div>
+         </div>
 
         <div className="bg-wedding-light p-4 rounded-lg">
-          <PDFPreview formData={formData} />
+          <PDFPreview formData={formData} ref={pdfPreviewRef} />
         </div>
       </div>
 
@@ -210,5 +266,5 @@ export const InvitationForm = () => {
         </Button>
       </div>
     </div>
-  );
-};
+   );
+ };

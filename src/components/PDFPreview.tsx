@@ -1,5 +1,5 @@
-import React from "react";
 import { Card } from "@/components/ui/card";
+import React, { forwardRef } from 'react';
 
 interface PDFPreviewProps {
   formData: {
@@ -7,6 +7,8 @@ interface PDFPreviewProps {
     groomNames: string;
     date: string;
     time: string;
+    brideQualification: string;
+    groomQualification: string;
     venue: string;
     mapUrl: string;
     theme: string;
@@ -22,20 +24,20 @@ const getThemeMessage = (theme: string) => {
       return "With joy in our hearts, we invite our beloved family member";
     case "friends":
       return "To our dearest friend";
-    case "work":
+     case "work":
       return "We cordially invite our esteemed colleague";
-    case "neighbors":
+     case "neighbors":
       return "To our wonderful neighbor";
     default:
       return "We joyfully invite";
   }
 };
 
-export const PDFPreview: React.FC<PDFPreviewProps> = ({ formData }) => {
+const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, ref) => {
   const themeMessage = getThemeMessage(formData.theme);
 
   return (
-    <Card className="p-8 bg-white shadow-lg min-h-[600px] animate-fadeIn">
+    <Card className="p-8 bg-white shadow-lg min-h-[600px] animate-fadeIn" ref={ref} >
       <div className="text-center space-y-6">
         <div className="text-wedding-text">
           {formData.personalizeInvitation && formData.inviteeName && (
@@ -48,29 +50,43 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({ formData }) => {
             <p className="text-2xl text-wedding-primary">
               {formData.brideNames}
             </p>
+             {formData.brideQualification && <p className="text-sm italic">{formData.brideQualification}</p>}
+
             <p className="text-xl">&</p>
             <p className="text-2xl text-wedding-primary">
               {formData.groomNames}
             </p>
-          </div>
+             {formData.groomQualification && <p className="text-sm italic">{formData.groomQualification}</p>}
 
-          {formData.date && formData.time && (
+          </div>
+ 
+           {formData.date && formData.time && (
             <div className="my-4">
               <p className="text-lg">
-                Join us in celebration on
+                Join us in celebration on:
               </p>
-              <p className="text-xl font-semibold">
+                
+              {formData.date && (
+                 
+                  
+              
+               <p className="text-xl font-semibold">
                 {new Date(formData.date).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
-                })}
-              </p>
-              <p className="text-lg">at {formData.time}</p>
-            </div>
-          )}
-
+                 })}
+                </p>
+            )}
+ 
+              {formData.time && (
+                <p className="text-lg">
+                  at {new Date(`2024-01-01T${formData.time}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                 </p>
+               )}
+             </div>
+           )}
           {formData.venue && (
             <div className="my-4">
               <p className="text-lg">Venue:</p>
@@ -87,8 +103,8 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({ formData }) => {
               )}
             </div>
           )}
-
-          {formData.personalizeInvitation && formData.personalMessage && (
+ 
+           {formData.personalizeInvitation && formData.personalMessage && (
             <div className="mt-8 text-lg italic">
               "{formData.personalMessage}"
             </div>
@@ -96,5 +112,6 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({ formData }) => {
         </div>
       </div>
     </Card>
-  );
-};
+   );
+ });
+ export default PDFPreview;
