@@ -1,5 +1,6 @@
 import React from "react";
-import { Card } from "@/components/ui/card";
+import { Document, Page, Text, View, StyleSheet, Link, PDFViewer } from "@react-pdf/renderer";
+import { pdfThemes } from "@/utils/pdfThemes";
 
 interface PDFPreviewProps {
   formData: {
@@ -10,6 +11,7 @@ interface PDFPreviewProps {
     venue: string;
     mapUrl: string;
     theme: string;
+    designTheme: string;
     personalizeInvitation: boolean;
     inviteeName: string;
     personalMessage: string;
@@ -33,68 +35,113 @@ const getThemeMessage = (theme: string) => {
 
 export const PDFPreview: React.FC<PDFPreviewProps> = ({ formData }) => {
   const themeMessage = getThemeMessage(formData.theme);
+  const designTheme = pdfThemes[formData.designTheme as keyof typeof pdfThemes] || pdfThemes.default;
+
+  const styles = StyleSheet.create({
+    page: {
+      padding: 40,
+      backgroundColor: '#ffffff',
+    },
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    title: {
+      fontSize: 24,
+      marginBottom: 20,
+      color: designTheme.primaryColor,
+      fontFamily: designTheme.fontFamily,
+    },
+    names: {
+      fontSize: 20,
+      marginVertical: 10,
+      color: designTheme.secondaryColor,
+      fontFamily: designTheme.fontFamily,
+    },
+    details: {
+      fontSize: 14,
+      marginVertical: 5,
+      color: designTheme.primaryColor,
+      textAlign: 'center',
+    },
+    link: {
+      color: 'blue',
+      textDecoration: 'underline',
+    },
+    message: {
+      fontSize: 12,
+      marginTop: 20,
+      fontStyle: 'italic',
+      color: designTheme.accentColor,
+    },
+  });
+
+  const formatTimeWithAMPM = (time: string) => {
+    if (!time) return "";
+    const [hours, minutes] = time.split(":");
+    const hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:${minutes} ${ampm}`;
+  };
 
   return (
-    <Card className="p-8 bg-white shadow-lg min-h-[600px] animate-fadeIn">
-      <div className="text-center space-y-6">
-        <div className="text-wedding-text">
-          {formData.personalizeInvitation && formData.inviteeName && (
-            <h2 className="text-xl mb-4">{themeMessage} {formData.inviteeName},</h2>
-          )}
-          
-          <h1 className="text-3xl font-semibold mb-2">Wedding Invitation</h1>
-          
-          <div className="my-8">
-            <p className="text-2xl text-wedding-primary">
-              {formData.brideNames}
-            </p>
-            <p className="text-xl">&</p>
-            <p className="text-2xl text-wedding-primary">
-              {formData.groomNames}
-            </p>
-          </div>
+    <PDFViewer style={{ width: '100%', height: '600px' }}>
+      <Document>
+        <Page size="A4" style={styles.page}>
+          <View style={styles.container}>
+            {formData.personalizeInvitation && formData.inviteeName && (
+              <Text style={styles.details}>
+                {themeMessage} {formData.inviteeName},
+              </Text>
+            )}
+            
+            <Text style={styles.title}>Wedding Invitation</Text>
+            
+            <Text style={styles.names}>{formData.brideNames}</Text>
+            <Text style={styles.details}>&</Text>
+            <Text style={styles.names}>{formData.groomNames}</Text>
 
-          {formData.date && formData.time && (
-            <div className="my-4">
-              <p className="text-lg">
-                Join us in celebration on
-              </p>
-              <p className="text-xl font-semibold">
-                {new Date(formData.date).toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </p>
-              <p className="text-lg">at {formData.time}</p>
-            </div>
-          )}
+            {formData.date && formData.time && (
+              <View>
+                <Text style={styles.details}>
+                  Join us in celebration on
+                </Text>
+                <Text style={styles.details}>
+                  {new Date(formData.date).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </Text>
+                <Text style={styles.details}>
+                  at {formatTimeWithAMPM(formData.time)}
+                </Text>
+              </View>
+            )}
 
-          {formData.venue && (
-            <div className="my-4">
-              <p className="text-lg">Venue:</p>
-              <p className="text-xl">{formData.venue}</p>
-              {formData.mapUrl && (
-                <a
-                  href={formData.mapUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-700 underline text-sm"
-                >
-                  View on Map
-                </a>
-              )}
-            </div>
-          )}
+            {formData.venue && (
+              <View>
+                <Text style={styles.details}>Venue:</Text>
+                <Text style={styles.details}>{formData.venue}</Text>
+                {formData.mapUrl && (
+                  <Link src={formData.mapUrl} style={styles.link}>
+                    View on Map
+                  </Link>
+                )}
+              </View>
+            )}
 
-          {formData.personalizeInvitation && formData.personalMessage && (
-            <div className="mt-8 text-lg italic">
-              "{formData.personalMessage}"
-            </div>
-          )}
-        </div>
-      </div>
-    </Card>
+            {formData.personalizeInvitation && formData.personalMessage && (
+              <Text style={styles.message}>
+                "{formData.personalMessage}"
+              </Text>
+            )}
+          </View>
+        </Page>
+      </Document>
+    </PDFViewer>
   );
 };
