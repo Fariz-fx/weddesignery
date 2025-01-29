@@ -16,7 +16,13 @@ import  html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import html2pdf from 'html2pdf.js';
 import PDFPreview from "./PDFPreview";
-
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+} from "@/components/ui/tooltip";
+import { ColorPicker } from "@/components/ui/color-picker";
 interface FormData {
     brideNames: string;
     groomNames: string;
@@ -30,6 +36,10 @@ interface FormData {
     personalizeInvitation: boolean;
     inviteeName: string;
     personalMessage: string;
+    useCustomization: boolean;
+    backgroundColor: string;
+    textColor:string;
+    backgroundTemplate:string;
 }
 
 export const InvitationForm = () => {
@@ -43,13 +53,18 @@ export const InvitationForm = () => {
         groomQualification: "",
         venue: "",
         mapUrl: "",
-        theme: "family",
+         theme: "family",
         personalizeInvitation: false,
         inviteeName: "",
         personalMessage: "",
+        useCustomization: false,
+        backgroundColor: "#ffffff",
+        textColor: "#333333",
+        backgroundTemplate: "white",
+
     });
 
-    const handleInputChange = (
+   const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
@@ -59,22 +74,35 @@ export const InvitationForm = () => {
     const handleThemeChange = (value: string) => {
         setFormData((prev) => ({ ...prev, theme: value }));
     };
+    const handleBackgroundChange = (value: string) => {
+        setFormData((prev) => ({ ...prev, backgroundTemplate: value }));
+    };
 
     const handlePersonalizationToggle = (checked: boolean) => {
         setFormData((prev) => ({ ...prev, personalizeInvitation: checked }));
     };
+    const handleCustomizationToggle = (checked: boolean) => {
+        setFormData((prev) => ({ ...prev, useCustomization: checked }));
+    };
+      const handleTextColorChange = (color: string) => {
+        setFormData((prev) => ({ ...prev, textColor: color }));
+    };
+    const handleBackgroundColorChange = (color: string) => {
+        setFormData((prev) => ({ ...prev, backgroundColor: color }));
+    };
+
 
     const pdfPreviewRef = useRef<HTMLDivElement>(null);
 
     const handleGeneratePDF = async () => {
-      if (!pdfPreviewRef.current) {
-          toast({
-              title: "Error!",
-              description: "Could not locate the invitation preview.",
-              variant: "destructive",
-          });
-          return;
-      }
+        if (!pdfPreviewRef.current) {
+            toast({
+                title: "Error!",
+                description: "Could not locate the invitation preview.",
+                variant: "destructive",
+            });
+            return;
+        }
         try {
             const element = pdfPreviewRef.current;
 
@@ -82,7 +110,7 @@ export const InvitationForm = () => {
               margin:       10,
               filename:     'invitation.pdf',
               image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 3 },
+              html2canvas:  { scale: 3 , backgroundColor: formData.backgroundColor},
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
              
@@ -113,6 +141,7 @@ export const InvitationForm = () => {
 
             const canvas = await html2canvas(pdfPreviewRef.current, {
                 scale: 3, // Increase scale for better resolution
+                backgroundColor: formData.backgroundColor,
             });
         
             const dataUrl = canvas.toDataURL('image/png');
@@ -132,6 +161,7 @@ export const InvitationForm = () => {
     };
 
     return (
+        <TooltipProvider>
         <div className="w-full max-w-4xl mx-auto p-6 space-y-8 animate-fadeIn">
             <h1 className="text-3xl font-semibold text-wedding-text text-center mb-8">
                 Create Your Wedding Invitation
@@ -139,6 +169,61 @@ export const InvitationForm = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                            id="useCustomization"
+                            checked={formData.useCustomization}
+                            onCheckedChange={handleCustomizationToggle}
+                        />
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                   <Label htmlFor="useCustomization">Use Customization</Label>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Choose more customization if required
+                                </TooltipContent>
+                            </Tooltip>
+
+                      </div>
+                     { formData.useCustomization && (
+                        <>
+                          <div>
+                                <Label htmlFor="backgroundTemplate">Background Template</Label>
+                                  <Select
+                                        value={formData.backgroundTemplate}
+                                        onValueChange={handleBackgroundChange}
+                                    >
+                                        <SelectTrigger className="border-wedding-secondary">
+                                          <SelectValue placeholder="Select background" />
+                                         </SelectTrigger>
+                                         <SelectContent>
+                                           <SelectItem value="white">White</SelectItem>
+                                             <SelectItem value="#f0f0f0">Light Gray</SelectItem>
+                                              <SelectItem value="#e0eaf6">Light Blue</SelectItem>
+                                           <SelectItem value="#f8f0e3">Light Yellow</SelectItem>
+                                        </SelectContent>
+                                  </Select>
+                           </div>
+                            <div>
+                                 <Label htmlFor="textColor">Text Color</Label>
+                                <ColorPicker
+                                        id="textColor"
+                                         value={formData.textColor}
+                                         onValueChange={handleTextColorChange}
+                                      />
+                            </div>
+                               <div>
+                                <Label htmlFor="backgroundColor">Background Color</Label>
+                                 <ColorPicker
+                                         id="backgroundColor"
+                                         value={formData.backgroundColor}
+                                          onValueChange={handleBackgroundColorChange}
+                                     />
+                             </div>
+                        </>
+                     )}
+
+
                     <div>
                         <Label htmlFor="brideNames">Bride's Name</Label>
                         <Input
@@ -259,7 +344,15 @@ export const InvitationForm = () => {
                             checked={formData.personalizeInvitation}
                             onCheckedChange={handlePersonalizationToggle}
                         />
-                        <Label htmlFor="personalize">Personalize Invitation</Label>
+                           <Tooltip>
+                                <TooltipTrigger asChild>
+                                      <Label htmlFor="personalize">Personalize Invitation</Label>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                   Add invitee's name and personal message.
+                                </TooltipContent>
+                            </Tooltip>
+
                     </div>
 
                     {formData.personalizeInvitation && (
@@ -301,13 +394,15 @@ export const InvitationForm = () => {
                  >
                   Generate PDF
                 </Button>
+                 {/* Optional image generation button */}
                 <Button
                     onClick={handleGenerateImage}
                      className="bg-wedding-primary hover:bg-wedding-secondary text-wedding-text px-8 py-2"
-                >
-                    Generate Image
+                 >
+                  Generate Image
                 </Button>
             </div>
         </div>
+        </TooltipProvider>
     );
 };
