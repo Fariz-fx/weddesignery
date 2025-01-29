@@ -14,6 +14,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { saveAs } from 'file-saver';
 import  html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import html2pdf from 'html2pdf.js';
 import PDFPreview from "./PDFPreview";
 
 interface FormData {
@@ -66,28 +67,26 @@ export const InvitationForm = () => {
     const pdfPreviewRef = useRef<HTMLDivElement>(null);
 
     const handleGeneratePDF = async () => {
-        if (!pdfPreviewRef.current) {
-            toast({
-                title: "Error!",
-                description: "Could not locate the invitation preview.",
-                variant: "destructive",
-            });
-            return;
-        }
+      if (!pdfPreviewRef.current) {
+          toast({
+              title: "Error!",
+              description: "Could not locate the invitation preview.",
+              variant: "destructive",
+          });
+          return;
+      }
         try {
-            const canvas = await html2canvas(pdfPreviewRef.current, {
-                scale: 2,
-            });
+            const element = pdfPreviewRef.current;
 
-
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const width = pdf.internal.pageSize.getWidth();
-            const height = pdf.internal.pageSize.getHeight();
-            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-
-            pdf.save("invitation.pdf")
-
+            const opt = {
+              margin:       10,
+              filename:     'invitation.pdf',
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 3 },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+             
+            html2pdf().from(element).set(opt).save();
 
             toast({
                 title: "Success",
@@ -98,6 +97,37 @@ export const InvitationForm = () => {
         } catch (error) {
             console.error('Failed to generate PDF:', error);
             toast({ title: "Failed", description: "Failed to generate the PDF.", variant: "destructive" });
+        }
+    };
+
+     const handleGenerateImage = async () => {
+      if (!pdfPreviewRef.current) {
+            toast({
+                title: "Error!",
+                description: "Could not locate the invitation preview.",
+                variant: "destructive",
+            });
+            return;
+        }
+        try {
+
+            const canvas = await html2canvas(pdfPreviewRef.current, {
+                scale: 3, // Increase scale for better resolution
+            });
+        
+            const dataUrl = canvas.toDataURL('image/png');
+            saveAs(dataUrl, "invitation.png");
+
+
+            toast({
+                title: "Success",
+                description: "Your invitation image has been generated.",
+            });
+
+
+        } catch (error) {
+            console.error('Failed to generate image:', error);
+            toast({ title: "Failed", description: "Failed to generate the image.", variant: "destructive" });
         }
     };
 
@@ -216,7 +246,7 @@ export const InvitationForm = () => {
                                 <SelectItem value="friends">Best Friends</SelectItem>
                                  <SelectItem value="work">Work Colleagues</SelectItem>
                                 <SelectItem value="neighbors">Neighbors</SelectItem>
-                                <SelectItem value="elegant">Elegant</SelectItem>
+                                 <SelectItem value="elegant">Elegant</SelectItem>
                                 <SelectItem value="modern">Modern</SelectItem>
                                 <SelectItem value="rustic">Rustic</SelectItem>
                             </SelectContent>
@@ -264,12 +294,18 @@ export const InvitationForm = () => {
                 </div>
             </div>
 
-            <div className="flex justify-center pt-6">
-                <Button
+             <div className="flex justify-center pt-6 gap-4">
+                 <Button
                     onClick={handleGeneratePDF}
                     className="bg-wedding-primary hover:bg-wedding-secondary text-wedding-text px-8 py-2"
+                 >
+                  Generate PDF
+                </Button>
+                <Button
+                    onClick={handleGenerateImage}
+                     className="bg-wedding-primary hover:bg-wedding-secondary text-wedding-text px-8 py-2"
                 >
-                    Generate PDF
+                    Generate Image
                 </Button>
             </div>
         </div>
