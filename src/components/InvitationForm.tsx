@@ -82,6 +82,7 @@ export const InvitationForm = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
+          <div>
             <Label htmlFor="brideNames">Bride's Name</Label>
             <Input
               id="brideNames"
