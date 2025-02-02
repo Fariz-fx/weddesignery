@@ -59,7 +59,8 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
         backgroundRepeat: 'no-repeat' ,
        } : {};
     return (
-        <Card className="p-8 shadow-lg min-h-[600px] animate-fadeIn" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8',  ...backgroundImageStyle }}>
+        <div className="animate-fadeIn">
+          <Card className="p-8 shadow-lg min-h-[600px]" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8',  ...backgroundImageStyle }}>
             <div className="text-center space-y-6">
                 <div  style={{color: formData.textColor || '#333333' }}>
                     {formData.personalizeInvitation && formData.inviteeName && (
@@ -140,7 +141,8 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                     )}
                 </div>
             </div>
-        </Card>
+          </Card>
+        </div>
     );
 });
 export default PDFPreview;
