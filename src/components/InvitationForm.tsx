@@ -118,11 +118,30 @@ export const InvitationForm = () => {
             const element = pdfPreviewRef.current;
 
             const opt = {
-              margin:       10,
-              filename:     'invitation.pdf',
-              image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 3 , backgroundColor: formData.backgroundColor},
-              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin: 10,
+                filename: 'invitation.pdf',
+                image: { 
+                    type: 'jpeg', 
+                    quality: 1.0 
+                },
+                html2canvas: {
+                    scale: window.devicePixelRatio * 2,
+                    backgroundColor: formData.backgroundColor,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    letterRendering: true,
+                    removeContainer: true,
+                    width: element.offsetWidth,
+                    height: element.offsetHeight
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait',
+                    compress: false,
+                    precision: 16
+                }
             };
              
             html2pdf().from(element).set(opt).save();
@@ -131,7 +150,6 @@ export const InvitationForm = () => {
                 title: "Success",
                 description: "Your invitation PDF has been generated.",
             });
-
 
         } catch (error) {
             console.error('Failed to generate PDF:', error);
@@ -149,21 +167,35 @@ export const InvitationForm = () => {
             return;
         }
         try {
-
-            const canvas = await html2canvas(pdfPreviewRef.current, {
-                scale: 3, // Increase scale for better resolution
+            const element = pdfPreviewRef.current;
+            const canvas = await html2canvas(element, {
+                scale: window.devicePixelRatio * 2, // Dynamic scale based on device
                 backgroundColor: formData.backgroundColor,
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+                letterRendering: true,
+                removeContainer: true,
+                width: element.offsetWidth,
+                height: element.offsetHeight,
+                onclone: (clonedDoc) => {
+                    // Ensure all fonts are rendered properly in the cloned document
+                    Array.from(clonedDoc.getElementsByTagName('*')).forEach(el => {
+                        if (el instanceof HTMLElement) {
+                            el.style.fontDisplay = 'swap';
+                        }
+                    });
+                }
             });
-        
-            const dataUrl = canvas.toDataURL('image/png');
-            saveAs(dataUrl, "invitation.png");
 
+            // Use PNG format with maximum quality
+            const dataUrl = canvas.toDataURL('image/png', 1.0);
+            saveAs(dataUrl, "invitation.png");
 
             toast({
                 title: "Success",
                 description: "Your invitation image has been generated.",
             });
-
 
         } catch (error) {
             console.error('Failed to generate image:', error);
