@@ -118,11 +118,23 @@ export const InvitationForm = () => {
             const element = pdfPreviewRef.current;
 
             const opt = {
-              margin:       10,
-              filename:     'invitation.pdf',
-              image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 3 , backgroundColor: formData.backgroundColor},
-              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin: 10,
+                filename: 'invitation.pdf',
+                image: { type: 'jpeg', quality: 1.0 },  // Maximum quality
+                html2canvas: {
+                    scale: window.devicePixelRatio * 2,  // Dynamic scale based on device
+                    useCORS: true,
+                    allowTaint: true,
+                    letterRendering: true,
+                    backgroundColor: formData.backgroundColor
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait',
+                    compress: false,
+                    precision: 16
+                }
             };
              
             html2pdf().from(element).set(opt).save();
@@ -132,15 +144,18 @@ export const InvitationForm = () => {
                 description: "Your invitation PDF has been generated.",
             });
 
-
         } catch (error) {
             console.error('Failed to generate PDF:', error);
-            toast({ title: "Failed", description: "Failed to generate the PDF.", variant: "destructive" });
+            toast({ 
+                title: "Failed", 
+                description: `Failed to generate the PDF: ${error.message}`,
+                variant: "destructive" 
+            });
         }
     };
 
      const handleGenerateImage = async () => {
-      if (!pdfPreviewRef.current) {
+        if (!pdfPreviewRef.current) {
             toast({
                 title: "Error!",
                 description: "Could not locate the invitation preview.",
@@ -149,25 +164,36 @@ export const InvitationForm = () => {
             return;
         }
         try {
-
             const canvas = await html2canvas(pdfPreviewRef.current, {
-                scale: 3, // Increase scale for better resolution
+                scale: window.devicePixelRatio * 2,
                 backgroundColor: formData.backgroundColor,
+                useCORS: true,
+                allowTaint: true,
+                letterRendering: true,
+                onclone: (clonedDoc) => {
+                    Array.from(clonedDoc.getElementsByTagName('*')).forEach(el => {
+                        if (el instanceof HTMLElement) {
+                            el.style.fontDisplay = 'swap';
+                        }
+                    });
+                }
             });
-        
-            const dataUrl = canvas.toDataURL('image/png');
+            
+            const dataUrl = canvas.toDataURL('image/png', 1.0);  // Use maximum quality
             saveAs(dataUrl, "invitation.png");
-
 
             toast({
                 title: "Success",
                 description: "Your invitation image has been generated.",
             });
 
-
         } catch (error) {
             console.error('Failed to generate image:', error);
-            toast({ title: "Failed", description: "Failed to generate the image.", variant: "destructive" });
+            toast({ 
+                title: "Failed", 
+                description: `Failed to generate the image: ${error.message}`,
+                variant: "destructive" 
+            });
         }
     };
 
