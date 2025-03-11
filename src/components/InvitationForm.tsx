@@ -42,8 +42,12 @@ interface FormData {
     textColor:string;
     backgroundTemplate:string;
     brideNameColor:string,
-    groomNameColor:string
+    groomNameColor:string,
+    useSecondaryLanguage: boolean,
+    language: string
 }
+
+import { getTranslation } from "@/lib/translations";
 
 export const InvitationForm = () => {
     const { toast } = useToast();
@@ -66,7 +70,8 @@ export const InvitationForm = () => {
         backgroundTemplate: "white",
         brideNameColor: "#FFC0CB",
          groomNameColor: "#FFC0CB",
-
+        useSecondaryLanguage: false,
+        language: "tamil"
     });
 
    const handleInputChange = (
@@ -102,14 +107,21 @@ export const InvitationForm = () => {
          setFormData((prev) => ({ ...prev, groomNameColor: color }));
     };
 
+    const handleLanguageToggle = (checked: boolean) => {
+        setFormData((prev) => ({ ...prev, useSecondaryLanguage: checked }));
+    };
+
+    const handleLanguageChange = (value: string) => {
+        setFormData((prev) => ({ ...prev, language: value }));
+    };
 
     const pdfPreviewRef = useRef<HTMLDivElement>(null);
 
     const handleGeneratePDF = async () => {
         if (!pdfPreviewRef.current) {
             toast({
-                title: "Error!",
-                description: "Could not locate the invitation preview.",
+                title: getTranslation("error", formData.language),
+                description: getTranslation("previewNotFound", formData.language),
                 variant: "destructive",
             });
             return;
@@ -157,8 +169,8 @@ export const InvitationForm = () => {
      const handleGenerateImage = async () => {
         if (!pdfPreviewRef.current) {
             toast({
-                title: "Error!",
-                description: "Could not locate the invitation preview.",
+                title: getTranslation("error", formData.language),
+                description: getTranslation("previewNotFound", formData.language),
                 variant: "destructive",
             });
             return;
@@ -206,7 +218,40 @@ export const InvitationForm = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                      <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="useSecondaryLanguage"
+                            checked={formData.useSecondaryLanguage}
+                            onCheckedChange={handleLanguageToggle}
+                        />
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Label htmlFor="useSecondaryLanguage">{getTranslation("enableDualLanguage", formData.language)}</Label>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {getTranslation("enableDualLanguageTooltip", formData.language)}
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                    
+                    {formData.useSecondaryLanguage && (
+                        <div>
+                            <Label htmlFor="language">{getTranslation("selectLanguage", formData.language)}</Label>
+                            <Select
+                                value={formData.language}
+                                onValueChange={handleLanguageChange}
+                            >
+                                <SelectTrigger className="border-wedding-secondary">
+                                    <SelectValue placeholder="Select language" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="tamil">Tamil</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    
+                    <div className="flex items-center space-x-2">
                         <Switch
                             id="useCustomization"
                             checked={formData.useCustomization}
