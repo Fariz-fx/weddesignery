@@ -176,7 +176,20 @@ export const InvitationForm = () => {
             return;
         }
         try {
-            const canvas = await html2canvas(pdfPreviewRef.current, {
+            // Store the original useSecondaryLanguage value
+            const originalUseSecondaryLanguage = formData.useSecondaryLanguage;
+            
+            // Generate English version first
+            if (originalUseSecondaryLanguage) {
+                // Temporarily disable secondary language to generate English-only version
+                setFormData(prev => ({ ...prev, useSecondaryLanguage: false }));
+                
+                // Wait a bit for the UI to update
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            // Generate English version
+            const englishCanvas = await html2canvas(pdfPreviewRef.current, {
                 scale: window.devicePixelRatio * 2,
                 backgroundColor: formData.backgroundColor,
                 useCORS: true,
@@ -191,12 +204,53 @@ export const InvitationForm = () => {
                 }
             });
             
-            const dataUrl = canvas.toDataURL('image/png', 1.0);  // Use maximum quality
-            saveAs(dataUrl, "invitation.png");
+            const englishDataUrl = englishCanvas.toDataURL('image/png', 1.0);
+            saveAs(englishDataUrl, "invitation_english.png");
+            
+            // If secondary language is enabled, generate Tamil version
+            if (originalUseSecondaryLanguage) {
+                // Create a special Tamil-only mode for the image generation
+                setFormData(prev => ({ 
+                    ...prev, 
+                    useSecondaryLanguage: true,
+                    tamilOnlyMode: true // Add a special flag for Tamil-only rendering
+                }));
+                
+                // Wait a bit for the UI to update
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Generate Tamil version
+                const tamilCanvas = await html2canvas(pdfPreviewRef.current, {
+                    scale: window.devicePixelRatio * 2,
+                    backgroundColor: formData.backgroundColor,
+                    useCORS: true,
+                    allowTaint: true,
+                    letterRendering: true,
+                    onclone: (clonedDoc) => {
+                        Array.from(clonedDoc.getElementsByTagName('*')).forEach(el => {
+                            if (el instanceof HTMLElement) {
+                                el.style.fontDisplay = 'swap';
+                            }
+                        });
+                    }
+                });
+                
+                const tamilDataUrl = tamilCanvas.toDataURL('image/png', 1.0);
+                saveAs(tamilDataUrl, "invitation_tamil.png");
+                
+                // Restore original state without the special flag
+                setFormData(prev => ({ 
+                    ...prev, 
+                    useSecondaryLanguage: originalUseSecondaryLanguage,
+                    tamilOnlyMode: false
+                }));
+            }
 
             toast({
                 title: "Success",
-                description: "Your invitation image has been generated.",
+                description: originalUseSecondaryLanguage ? 
+                    "Your invitation images have been generated in both English and Tamil." : 
+                    "Your invitation image has been generated.",
             });
 
         } catch (error) {

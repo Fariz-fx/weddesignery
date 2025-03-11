@@ -24,7 +24,8 @@ interface PDFPreviewProps {
          brideNameColor:string,
           groomNameColor:string,
         useSecondaryLanguage: boolean,
-        language: string
+        language: string,
+        tamilOnlyMode?: boolean // Add optional tamilOnlyMode flag
     };
 }
 
@@ -91,92 +92,94 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
           <Card className="p-8 shadow-lg min-h-[600px]" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8',  ...backgroundImageStyle }}>
             <div className="text-center space-y-6">
                 <div style={{color: formData.textColor || '#333333' }}>
-                    {/* English Content Section */}
-                    <div className="mb-8">
-                        {formData.personalizeInvitation && formData.inviteeName && (
-                            <h2 className="text-xl mb-4" style={{color: formData.textColor || '#333333'}}>
-                                {themeMessage} {formData.inviteeName},
-                            </h2>
-                        )}
+                    {/* English Content Section - Hide when in Tamil-only mode */}
+                    {!formData.tamilOnlyMode && (
+                        <div className="mb-8">
+                            {formData.personalizeInvitation && formData.inviteeName && (
+                                <h2 className="text-xl mb-4" style={{color: formData.textColor || '#333333'}}>
+                                    {themeMessage} {formData.inviteeName},
+                                </h2>
+                            )}
 
-                        <h1 className="text-3xl font-semibold mb-2" style={{color: formData.textColor || '#333333'}}>
-                            {getTranslation("weddingInvitation", 'english')}
-                        </h1>
+                            <h1 className="text-3xl font-semibold mb-2" style={{color: formData.textColor || '#333333'}}>
+                                {getTranslation("weddingInvitation", 'english')}
+                            </h1>
 
-                        <div className="my-8">
-                            <p className="text-2xl" style={{color: formData.brideNameColor || '#FFC0CB'}}>
-                                {formData.brideNames}
-                            </p>
-                            {formData.brideQualification && <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>{formData.brideQualification}</p>}
-
-                            <p className="text-xl" style={{color: formData.textColor || '#333333'}}>&</p>
-                            <p className="text-2xl" style={{color: formData.groomNameColor || '#FFC0CB'}}>
-                                {formData.groomNames}
-                            </p>
-                            {formData.groomQualification && <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>{formData.groomQualification}</p>}
-                        </div>
-
-                        {formData.date && formData.time && (
-                            <div className="my-4">
-                                <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                    {getTranslation("joinCelebration", 'english')}
+                            <div className="my-8">
+                                <p className="text-2xl" style={{color: formData.brideNameColor || '#FFC0CB'}}>
+                                    {formData.brideNames}
                                 </p>
-                                {formData.date && (
-                                    <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
-                                        {new Date(formData.date).toLocaleDateString('en-US', {
-                                            weekday: 'long',
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric'
-                                        })}
-                                    </p>
-                                )}
-                                {formData.time && (
-                                    <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                        at {new Date(`2024-01-01T${formData.time}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
-                                    </p>
-                                )}
-                                <a
-                                    href={getCalendarLink()}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-500 hover:text-blue-700 underline text-sm"
-                                    style={{color: formData.textColor || '#333333'}}
-                                >
-                                    {getTranslation("addToCalendar", 'english')}
-                                </a>
+                                {formData.brideQualification && <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>{formData.brideQualification}</p>}
+
+                                <p className="text-xl" style={{color: formData.textColor || '#333333'}}>&</p>
+                                <p className="text-2xl" style={{color: formData.groomNameColor || '#FFC0CB'}}>
+                                    {formData.groomNames}
+                                </p>
+                                {formData.groomQualification && <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>{formData.groomQualification}</p>}
                             </div>
-                        )}
-                        {formData.venue && (
-                            <div className="my-4">
-                                <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                    {getTranslation("venue", 'english')}
-                                </p>
-                                <p className="text-xl" style={{color: formData.textColor || '#333333'}}>{formData.venue}</p>
-                                {formData.mapUrl && (
+
+                            {formData.date && formData.time && (
+                                <div className="my-4">
+                                    <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
+                                        {getTranslation("joinCelebration", 'english')}
+                                    </p>
+                                    {formData.date && (
+                                        <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
+                                            {new Date(formData.date).toLocaleDateString('en-US', {
+                                                weekday: 'long',
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </p>
+                                    )}
+                                    {formData.time && (
+                                        <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
+                                            at {new Date(`2024-01-01T${formData.time}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                        </p>
+                                    )}
                                     <a
-                                        href={formData.mapUrl}
+                                        href={getCalendarLink()}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-blue-500 hover:text-blue-700 underline text-sm"
                                         style={{color: formData.textColor || '#333333'}}
                                     >
-                                        {getTranslation("viewOnMap", 'english')}
+                                        {getTranslation("addToCalendar", 'english')}
                                     </a>
-                                )}
-                            </div>
-                        )}
+                                </div>
+                            )}
+                            {formData.venue && (
+                                <div className="my-4">
+                                    <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
+                                        {getTranslation("venue", 'english')}
+                                    </p>
+                                    <p className="text-xl" style={{color: formData.textColor || '#333333'}}>{formData.venue}</p>
+                                    {formData.mapUrl && (
+                                        <a
+                                            href={formData.mapUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-500 hover:text-blue-700 underline text-sm"
+                                            style={{color: formData.textColor || '#333333'}}
+                                        >
+                                            {getTranslation("viewOnMap", 'english')}
+                                        </a>
+                                    )}
+                                </div>
+                            )}
 
-                        {formData.personalizeInvitation && formData.personalMessage && (
-                            <div className="mt-8 text-lg italic" style={{color: formData.textColor || '#333333'}}>
-                                "{formData.personalMessage}"
-                            </div>
-                        )}
-                    </div>
+                            {formData.personalizeInvitation && formData.personalMessage && (
+                                <div className="mt-8 text-lg italic" style={{color: formData.textColor || '#333333'}}>
+                                    "{formData.personalMessage}"
+                                </div>
+                            )}
+                        </div>
+                    )}
                     
                     {/* Tamil Content Section - Only shown when secondary language is enabled */}
                     {formData.useSecondaryLanguage && (
-                        <div className="mt-10 pt-10 border-t border-gray-300">
+                        <div className={!formData.tamilOnlyMode ? "mt-10 pt-10 border-t border-gray-300" : ""}>
                             {formData.personalizeInvitation && formData.inviteeName && (
                                 <h2 className="text-xl mb-4" style={{color: formData.textColor || '#333333'}}>
                                     {themeMessageTamil} {formData.inviteeName},
