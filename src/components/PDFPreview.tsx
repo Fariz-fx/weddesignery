@@ -3,10 +3,21 @@ import React, { forwardRef } from 'react';
 import { backgroundTemplates } from "@/lib/background-templates";
 import { getTranslation, translateUserInput } from "@/lib/translations";
 
+// Helper function to transliterate names to Tamil
+const transliterateName = (name: string, language: string = 'english'): string => {
+    if (language === 'english' || !name) return name;
+    
+    // For names, we'll use a simple transliteration approach
+    // In a production app, you would use a proper transliteration API
+    return translateUserInput(name, language);
+};
+
 interface PDFPreviewProps {
     formData: {
         brideNames: string;
         groomNames: string;
+        brideNameTamil: string;
+        groomNameTamil: string;
         date: string;
         time: string;
         brideQualification: string;
@@ -63,23 +74,29 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
     const formatDateInTamil = (dateStr: string) => {
         if (!dateStr) return '';
         const date = new Date(dateStr);
-        // This is a simplified approach - in a production app, you might want to use a proper Tamil date formatter
-        return date.toLocaleDateString('en-US', {
+        // Format the date in English first
+        const formattedDate = date.toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
+        // Then translate it to Tamil using our enhanced translateUserInput function
+        return translateUserInput(formattedDate, formData.language);
     };
     
     // Helper function to format time in Tamil
     const formatTimeInTamil = (timeStr: string) => {
         if (!timeStr) return '';
-        return new Date(`2024-01-01T${timeStr}`).toLocaleTimeString('en-US', { 
+        // Format the time in English first
+        const formattedTime = new Date(`2024-01-01T${timeStr}`).toLocaleTimeString('en-US', { 
             hour: '2-digit', 
             minute: '2-digit', 
             hour12: true 
         });
+        // Then translate it to Tamil using our enhanced translateUserInput function
+        // This will handle AM/PM translation properly
+        return translateUserInput(formattedTime, formData.language);
     };
 
    const selectedTemplate = backgroundTemplates.find(template => template.value === formData.backgroundTemplate);
@@ -192,13 +209,13 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
 
                             <div className="my-8">
                                 <p className="text-2xl" style={{color: formData.brideNameColor || '#FFC0CB'}}>
-                                    {formData.brideNames}
+                                    {formData.brideNameTamil || transliterateName(formData.brideNames, formData.language)}
                                 </p>
                                 {formData.brideQualification && <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>{translateUserInput(formData.brideQualification, formData.language)}</p>}
 
                                 <p className="text-xl" style={{color: formData.textColor || '#333333'}}>&</p>
                                 <p className="text-2xl" style={{color: formData.groomNameColor || '#FFC0CB'}}>
-                                    {formData.groomNames}
+                                    {formData.groomNameTamil || transliterateName(formData.groomNames, formData.language)}
                                 </p>
                                 {formData.groomQualification && <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>{translateUserInput(formData.groomQualification, formData.language)}</p>}
                             </div>

@@ -24,9 +24,12 @@ import {
 } from "@/components/ui/tooltip";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { backgroundTemplates } from "@/lib/background-templates";
+import TamilKeyboard from "./TamilKeyboard";
 interface FormData {
     brideNames: string;
     groomNames: string;
+    brideNameTamil: string;
+    groomNameTamil: string;
     date: string;
     time: string;
     brideQualification: string;
@@ -54,6 +57,8 @@ export const InvitationForm = () => {
     const [formData, setFormData] = useState<FormData>({
         brideNames: "",
         groomNames: "",
+        brideNameTamil: "",
+        groomNameTamil: "",
         date: "",
         time: "",
         brideQualification: "",
@@ -73,6 +78,10 @@ export const InvitationForm = () => {
         useSecondaryLanguage: false,
         language: "tamil"
     });
+    
+    // State for Tamil keyboard
+    const [isBrideKeyboardOpen, setIsBrideKeyboardOpen] = useState(false);
+    const [isGroomKeyboardOpen, setIsGroomKeyboardOpen] = useState(false);
 
    const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -182,7 +191,10 @@ export const InvitationForm = () => {
             // Generate English version first
             if (originalUseSecondaryLanguage) {
                 // Temporarily disable secondary language to generate English-only version
-                setFormData(prev => ({ ...prev, useSecondaryLanguage: false }));
+                setFormData(prev => ({ 
+                    ...prev, 
+                    useSecondaryLanguage: false 
+                }));
                 
                 // Wait a bit for the UI to update
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -213,7 +225,10 @@ export const InvitationForm = () => {
                 setFormData(prev => ({ 
                     ...prev, 
                     useSecondaryLanguage: true,
-                    tamilOnlyMode: true // Add a special flag for Tamil-only rendering
+                    tamilOnlyMode: true, // Add a special flag for Tamil-only rendering
+                    // Make sure to preserve the Tamil name fields
+                    brideNameTamil: prev.brideNameTamil,
+                    groomNameTamil: prev.groomNameTamil
                 }));
                 
                 // Wait a bit for the UI to update
@@ -289,20 +304,68 @@ export const InvitationForm = () => {
                     </div>
                     
                     {formData.useSecondaryLanguage && (
-                        <div>
-                            <Label htmlFor="language">{getTranslation("selectLanguage", formData.language)}</Label>
-                            <Select
-                                value={formData.language}
-                                onValueChange={handleLanguageChange}
-                            >
-                                <SelectTrigger className="border-wedding-secondary">
-                                    <SelectValue placeholder="Select language" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="tamil">Tamil</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        <>
+                            <div>
+                                <Label htmlFor="language">{getTranslation("selectLanguage", formData.language)}</Label>
+                                <Select
+                                    value={formData.language}
+                                    onValueChange={handleLanguageChange}
+                                >
+                                    <SelectTrigger className="border-wedding-secondary">
+                                        <SelectValue placeholder="Select language" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="tamil">Tamil</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            
+                            <div>
+                                <Label htmlFor="brideNameTamil">Bride's Name (Tamil)</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        id="brideNameTamil"
+                                        name="brideNameTamil"
+                                        value={formData.brideNameTamil}
+                                        onChange={handleInputChange}
+                                        className="border-wedding-secondary flex-1"
+                                    />
+                                    <TamilKeyboard 
+                                        isOpen={isBrideKeyboardOpen}
+                                        onOpenChange={setIsBrideKeyboardOpen}
+                                        onCharacterSelect={(char) => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                brideNameTamil: prev.brideNameTamil + char
+                                            }));
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <Label htmlFor="groomNameTamil">Groom's Name (Tamil)</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        id="groomNameTamil"
+                                        name="groomNameTamil"
+                                        value={formData.groomNameTamil}
+                                        onChange={handleInputChange}
+                                        className="border-wedding-secondary flex-1"
+                                    />
+                                    <TamilKeyboard 
+                                        isOpen={isGroomKeyboardOpen}
+                                        onOpenChange={setIsGroomKeyboardOpen}
+                                        onCharacterSelect={(char) => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                groomNameTamil: prev.groomNameTamil + char
+                                            }));
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </>
                     )}
                     
                     <div className="flex items-center space-x-2">

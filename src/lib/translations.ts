@@ -185,23 +185,59 @@ export const translateUserInput = (text: string, language: string = 'english'): 
     // Convert text to lowercase for matching
     const lowerText = text.toLowerCase();
     
-    // Replace days of week
+    // First check if the entire text matches a translation key
     Object.keys(translations).forEach(key => {
         if (translations[key].english.toLowerCase() === lowerText) {
             translatedText = translations[key][language] || text;
             return;
         }
-        
-        // Replace if the English word is found in the text
-        // This is a simple approach and might have limitations
-        const englishWord = translations[key].english.toLowerCase();
-        if (lowerText.includes(englishWord)) {
-            const tamilWord = translations[key][language];
-            // Use case-insensitive replacement to preserve original casing
-            const regex = new RegExp(englishWord, 'gi');
-            translatedText = translatedText.replace(regex, tamilWord);
-        }
     });
+    
+    // If the text wasn't fully translated, try to translate parts of it
+    if (translatedText === text) {
+        // Special handling for dates
+        if (text.match(/^\d{4}-\d{2}-\d{2}$/) || text.includes('/')) {
+            // This is likely a date, try to parse and format it
+            try {
+                const date = new Date(text);
+                if (!isNaN(date.getTime())) {
+                    // Get day of week
+                    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+                    const month = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
+                    
+                    // Translate day and month
+                    let tamilDay = dayOfWeek;
+                    let tamilMonth = month;
+                    
+                    Object.keys(translations).forEach(key => {
+                        if (translations[key].english.toLowerCase() === dayOfWeek) {
+                            tamilDay = translations[key][language];
+                        }
+                        if (translations[key].english.toLowerCase() === month) {
+                            tamilMonth = translations[key][language];
+                        }
+                    });
+                    
+                    // Format in Tamil style
+                    return `${tamilDay}, ${tamilMonth} ${date.getDate()}, ${date.getFullYear()}`;
+                }
+            } catch (e) {
+                // If date parsing fails, continue with word replacement
+            }
+        }
+        
+        // Replace individual words
+        Object.keys(translations).forEach(key => {
+            // Replace if the English word is found in the text
+            const englishWord = translations[key].english.toLowerCase();
+            if (lowerText.includes(englishWord)) {
+                const tamilWord = translations[key][language];
+                // Use case-insensitive replacement to preserve original casing
+                const regex = new RegExp(englishWord, 'gi');
+                translatedText = translatedText.replace(regex, tamilWord);
+            }
+        });
+    }
     
     return translatedText;
 };
