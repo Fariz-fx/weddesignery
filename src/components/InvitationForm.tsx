@@ -24,9 +24,12 @@ import {
 } from "@/components/ui/tooltip";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { backgroundTemplates } from "@/lib/background-templates";
+import TamilKeyboard from "./TamilKeyboard";
 interface FormData {
     brideNames: string;
     groomNames: string;
+    brideNameTamil: string;
+    groomNameTamil: string;
     date: string;
     time: string;
     brideQualification: string;
@@ -42,14 +45,20 @@ interface FormData {
     textColor:string;
     backgroundTemplate:string;
     brideNameColor:string,
-    groomNameColor:string
+    groomNameColor:string,
+    useSecondaryLanguage: boolean,
+    language: string
 }
+
+import { getTranslation } from "@/lib/translations";
 
 export const InvitationForm = () => {
     const { toast } = useToast();
     const [formData, setFormData] = useState<FormData>({
         brideNames: "",
         groomNames: "",
+        brideNameTamil: "",
+        groomNameTamil: "",
         date: "",
         time: "",
         brideQualification: "",
@@ -66,8 +75,13 @@ export const InvitationForm = () => {
         backgroundTemplate: "white",
         brideNameColor: "#FFC0CB",
          groomNameColor: "#FFC0CB",
-
+        useSecondaryLanguage: false,
+        language: "tamil"
     });
+    
+    // State for Tamil keyboard
+    const [isBrideKeyboardOpen, setIsBrideKeyboardOpen] = useState(false);
+    const [isGroomKeyboardOpen, setIsGroomKeyboardOpen] = useState(false);
 
    const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -102,14 +116,21 @@ export const InvitationForm = () => {
          setFormData((prev) => ({ ...prev, groomNameColor: color }));
     };
 
+    const handleLanguageToggle = (checked: boolean) => {
+        setFormData((prev) => ({ ...prev, useSecondaryLanguage: checked }));
+    };
+
+    const handleLanguageChange = (value: string) => {
+        setFormData((prev) => ({ ...prev, language: value }));
+    };
 
     const pdfPreviewRef = useRef<HTMLDivElement>(null);
 
     const handleGeneratePDF = async () => {
         if (!pdfPreviewRef.current) {
             toast({
-                title: "Error!",
-                description: "Could not locate the invitation preview.",
+                title: getTranslation("error", formData.language),
+                description: getTranslation("previewNotFound", formData.language),
                 variant: "destructive",
             });
             return;
@@ -157,14 +178,30 @@ export const InvitationForm = () => {
      const handleGenerateImage = async () => {
         if (!pdfPreviewRef.current) {
             toast({
-                title: "Error!",
-                description: "Could not locate the invitation preview.",
+                title: getTranslation("error", formData.language),
+                description: getTranslation("previewNotFound", formData.language),
                 variant: "destructive",
             });
             return;
         }
         try {
-            const canvas = await html2canvas(pdfPreviewRef.current, {
+            // Store the original useSecondaryLanguage value
+            const originalUseSecondaryLanguage = formData.useSecondaryLanguage;
+            
+            // Generate English version first
+            if (originalUseSecondaryLanguage) {
+                // Temporarily disable secondary language to generate English-only version
+                setFormData(prev => ({ 
+                    ...prev, 
+                    useSecondaryLanguage: false 
+                }));
+                
+                // Wait a bit for the UI to update
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            // Generate English version
+            const englishCanvas = await html2canvas(pdfPreviewRef.current, {
                 scale: window.devicePixelRatio * 2,
                 backgroundColor: formData.backgroundColor,
                 useCORS: true,
@@ -179,12 +216,56 @@ export const InvitationForm = () => {
                 }
             });
             
-            const dataUrl = canvas.toDataURL('image/png', 1.0);  // Use maximum quality
-            saveAs(dataUrl, "invitation.png");
+            const englishDataUrl = englishCanvas.toDataURL('image/png', 1.0);
+            saveAs(englishDataUrl, "invitation_english.png");
+            
+            // If secondary language is enabled, generate Tamil version
+            if (originalUseSecondaryLanguage) {
+                // Create a special Tamil-only mode for the image generation
+                setFormData(prev => ({ 
+                    ...prev, 
+                    useSecondaryLanguage: true,
+                    tamilOnlyMode: true, // Add a special flag for Tamil-only rendering
+                    // Make sure to preserve the Tamil name fields
+                    brideNameTamil: prev.brideNameTamil,
+                    groomNameTamil: prev.groomNameTamil
+                }));
+                
+                // Wait a bit for the UI to update
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Generate Tamil version
+                const tamilCanvas = await html2canvas(pdfPreviewRef.current, {
+                    scale: window.devicePixelRatio * 2,
+                    backgroundColor: formData.backgroundColor,
+                    useCORS: true,
+                    allowTaint: true,
+                    letterRendering: true,
+                    onclone: (clonedDoc) => {
+                        Array.from(clonedDoc.getElementsByTagName('*')).forEach(el => {
+                            if (el instanceof HTMLElement) {
+                                el.style.fontDisplay = 'swap';
+                            }
+                        });
+                    }
+                });
+                
+                const tamilDataUrl = tamilCanvas.toDataURL('image/png', 1.0);
+                saveAs(tamilDataUrl, "invitation_tamil.png");
+                
+                // Restore original state without the special flag
+                setFormData(prev => ({ 
+                    ...prev, 
+                    useSecondaryLanguage: originalUseSecondaryLanguage,
+                    tamilOnlyMode: false
+                }));
+            }
 
             toast({
                 title: "Success",
-                description: "Your invitation image has been generated.",
+                description: originalUseSecondaryLanguage ? 
+                    "Your invitation images have been generated in both English and Tamil." : 
+                    "Your invitation image has been generated.",
             });
 
         } catch (error) {
@@ -206,7 +287,88 @@ export const InvitationForm = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                      <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="useSecondaryLanguage"
+                            checked={formData.useSecondaryLanguage}
+                            onCheckedChange={handleLanguageToggle}
+                        />
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Label htmlFor="useSecondaryLanguage">{getTranslation("enableDualLanguage", formData.language)}</Label>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {getTranslation("enableDualLanguageTooltip", formData.language)}
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                    
+                    {formData.useSecondaryLanguage && (
+                        <>
+                            <div>
+                                <Label htmlFor="language">{getTranslation("selectLanguage", formData.language)}</Label>
+                                <Select
+                                    value={formData.language}
+                                    onValueChange={handleLanguageChange}
+                                >
+                                    <SelectTrigger className="border-wedding-secondary">
+                                        <SelectValue placeholder="Select language" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="tamil">Tamil</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            
+                            <div>
+                                <Label htmlFor="brideNameTamil">Bride's Name (Tamil)</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        id="brideNameTamil"
+                                        name="brideNameTamil"
+                                        value={formData.brideNameTamil}
+                                        onChange={handleInputChange}
+                                        className="border-wedding-secondary flex-1"
+                                    />
+                                    <TamilKeyboard 
+                                        isOpen={isBrideKeyboardOpen}
+                                        onOpenChange={setIsBrideKeyboardOpen}
+                                        onCharacterSelect={(char) => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                brideNameTamil: prev.brideNameTamil + char
+                                            }));
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <Label htmlFor="groomNameTamil">Groom's Name (Tamil)</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        id="groomNameTamil"
+                                        name="groomNameTamil"
+                                        value={formData.groomNameTamil}
+                                        onChange={handleInputChange}
+                                        className="border-wedding-secondary flex-1"
+                                    />
+                                    <TamilKeyboard 
+                                        isOpen={isGroomKeyboardOpen}
+                                        onOpenChange={setIsGroomKeyboardOpen}
+                                        onCharacterSelect={(char) => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                groomNameTamil: prev.groomNameTamil + char
+                                            }));
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    
+                    <div className="flex items-center space-x-2">
                         <Switch
                             id="useCustomization"
                             checked={formData.useCustomization}
