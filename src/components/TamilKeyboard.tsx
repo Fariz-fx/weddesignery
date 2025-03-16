@@ -183,7 +183,7 @@ const TamilKeyboard: React.FC<TamilKeyboardProps> = ({
               const tooltipText = getTooltipText(char);
               
               return tooltipText ? (
-                <TooltipProvider key={index}>
+                <TooltipProvider key={`tooltip-${char}`}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button 
@@ -201,7 +201,7 @@ const TamilKeyboard: React.FC<TamilKeyboardProps> = ({
                 </TooltipProvider>
               ) : (
                 <Button 
-                  key={index} 
+                  key={`char-${char}`} 
                   variant="outline" 
                   className={`${getButtonSize()} hover:bg-wedding-secondary hover:text-white transition-colors`}
                   onClick={() => onCharacterSelect(char)}
@@ -228,7 +228,7 @@ const TamilKeyboard: React.FC<TamilKeyboardProps> = ({
         <div className={`grid ${getGridCols()}`}>
           {filteredChars.map((char, index) => (
             <Button 
-              key={index} 
+              key={`char-${char}`} 
               variant="outline" 
               className={`${getButtonSize()} bg-white hover:bg-wedding-secondary hover:text-white transition-colors`}
               onClick={() => onCharacterSelect(char)}

@@ -189,14 +189,13 @@ export const translateUserInput = (text: string, language: string = 'english'): 
     Object.keys(translations).forEach(key => {
         if (translations[key].english.toLowerCase() === lowerText) {
             translatedText = translations[key][language] || text;
-            return;
         }
     });
     
     // If the text wasn't fully translated, try to translate parts of it
     if (translatedText === text) {
         // Special handling for dates
-        if (text.match(/^\d{4}-\d{2}-\d{2}$/) || text.includes('/')) {
+        if (/^\d{4}-\d{2}-\d{2}$/.exec(text) || text.includes('/')) {
             // This is likely a date, try to parse and format it
             try {
                 const date = new Date(text);
