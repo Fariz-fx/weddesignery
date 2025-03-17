@@ -144,16 +144,16 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                                     </p>
                                 </div>
                             )}
-                            
-                            {formData.personalizeInvitation && formData.inviteeName && (
-                                <h2 className="text-xl mb-4" style={{color: formData.textColor || '#333333'}}>
-                                    {themeMessage} {formData.inviteeName},
-                                </h2>
-                            )}
 
                             <h1 className="text-3xl font-semibold mb-2" style={{color: formData.textColor || '#333333'}}>
                                 {getTranslation("weddingInvitation", 'english')}
                             </h1>
+                            
+                            {formData.personalizeInvitation && formData.inviteeName && (
+                                <h2 className="text-xl my-4" style={{color: formData.textColor || '#333333'}}>
+                                    {themeMessage} {formData.inviteeName},
+                                </h2>
+                            )}
 
                             <div className="my-8">
                                 <p className="text-2xl" style={{color: formData.brideNameColor || '#FFC0CB'}}>
@@ -248,16 +248,16 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                                     </p>
                                 </div>
                             )}
-                            
-                            {formData.personalizeInvitation && formData.inviteeName && (
-                                <h2 className="text-xl mb-4" style={{color: formData.textColor || '#333333'}}>
-                                    {themeMessageTamil} {formData.inviteeName},
-                                </h2>
-                            )}
 
                             <h1 className="text-3xl font-semibold mb-2" style={{color: formData.textColor || '#333333'}}>
                                 {getTranslation("weddingInvitation", formData.language)}
                             </h1>
+                            
+                            {formData.personalizeInvitation && formData.inviteeName && (
+                                <h2 className="text-xl my-4" style={{color: formData.textColor || '#333333'}}>
+                                    {themeMessageTamil} {formData.inviteeName},
+                                </h2>
+                            )}
 
                             <div className="my-8">
                                 <p className="text-2xl" style={{color: formData.brideNameColor || '#FFC0CB'}}>
