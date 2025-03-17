@@ -36,8 +36,8 @@ export const translations: Translations = {
         tamil: "வரைபடத்தில் காண்க"
     },
     familyTheme: {
-        english: "With joy in our hearts, we invite our beloved family member",
-        tamil: "மகிழ்ச்சியுடன், எங்கள் அன்பான குடும்ப உறுப்பினரை அழைக்கிறோம்"
+        english: "Cordially invite your esteemed presence with family and friends on the auspicious occasion of the wedding ceremony of our beloved daughter",
+        tamil: "எங்கள் நிக்காஹ் (திருமண) விழாவில் கலந்து கொள்ளுமாறு அன்புடன் அழைக்கிறோம்"
     },
     friendsTheme: {
         english: "I am excited to share with you that I am getting married soon, and I would be honored to have you join me on this special day",

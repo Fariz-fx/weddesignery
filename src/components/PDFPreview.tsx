@@ -171,7 +171,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                             {formData.date && formData.time && (
                                 <div className="my-4">
                                     <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                        {getTranslation("joinCelebration", 'english')}
+                                        {themeMessage}
                                     </p>
                                     {formData.date && (
                                         <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
@@ -273,7 +273,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                             {formData.date && formData.time && (
                                 <div className="my-4">
                                     <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                        {getTranslation("joinCelebration", formData.language)}
+                                        {themeMessageTamil}
                                     </p>
                                     {formData.date && (
                                         <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
