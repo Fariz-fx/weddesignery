@@ -127,7 +127,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
        } : {};
     return (
         <div className="animate-fadeIn">
-          <Card className="p-8 shadow-lg min-h-[600px]" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8',  ...backgroundImageStyle }}>
+          <Card className="p-8 shadow-lg min-h-[600px] relative" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8',  ...backgroundImageStyle }}>
             <div className="text-center space-y-6">
                 <div style={{color: formData.textColor || '#333333' }}>
                     {/* English Content Section - Hide when in Tamil-only mode */}
@@ -329,6 +329,15 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                         </div>
                     )}
                 </div>
+            </div>
+            {/* Watermark */}
+            <div className="absolute bottom-2 right-3" style={{color: formData.textColor || '#333333', opacity: 0.7, fontSize: '0.7rem'}}>
+              {!formData.tamilOnlyMode && (
+                <p>{getTranslation("madeByFarees", "english")}</p>
+              )}
+              {formData.useSecondaryLanguage && formData.tamilOnlyMode && (
+                <p>{getTranslation("madeByFarees", formData.language)}</p>
+              )}
             </div>
           </Card>
         </div>
