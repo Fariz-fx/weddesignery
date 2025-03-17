@@ -35,6 +35,7 @@ interface FormData {
     brideQualification: string;
     groomQualification: string;
     venue: string;
+    venueAddress: string;
     mapUrl: string;
     theme: string;
     personalizeInvitation: boolean;
@@ -47,7 +48,9 @@ interface FormData {
     brideNameColor:string,
     groomNameColor:string,
     useSecondaryLanguage: boolean,
-    language: string
+    language: string,
+    religion: string,
+    showReligiousText: boolean
 }
 
 import { getTranslation } from "@/lib/translations";
@@ -64,8 +67,9 @@ export const InvitationForm = () => {
         brideQualification: "",
         groomQualification: "",
         venue: "",
+        venueAddress: "",
         mapUrl: "",
-         theme: "family",
+        theme: "family",
         personalizeInvitation: false,
         inviteeName: "",
         personalMessage: "",
@@ -74,9 +78,11 @@ export const InvitationForm = () => {
         textColor: "#333333",
         backgroundTemplate: "white",
         brideNameColor: "#FFC0CB",
-         groomNameColor: "#FFC0CB",
+        groomNameColor: "#FFC0CB",
         useSecondaryLanguage: false,
-        language: "tamil"
+        language: "tamil",
+        religion: "",
+        showReligiousText: false
     });
     
     // State for Tamil keyboard
@@ -508,7 +514,7 @@ export const InvitationForm = () => {
                     </div>
 
                     <div>
-                        <Label htmlFor="venue">Venue</Label>
+                        <Label htmlFor="venue">Venue Name</Label>
                         <Input
                             id="venue"
                             name="venue"
@@ -517,9 +523,18 @@ export const InvitationForm = () => {
                             className="border-wedding-secondary"
                         />
                     </div>
-
                     <div>
-                        <Label htmlFor="mapUrl">Map URL</Label>
+                        <Label htmlFor="venueAddress">Venue Address</Label>
+                        <Input
+                            id="venueAddress"
+                            name="venueAddress"
+                            value={formData.venueAddress}
+                            onChange={handleInputChange}
+                            className="border-wedding-secondary"
+                        />
+                    </div>
+                    <div>
+                        <Label htmlFor="mapUrl">Google Maps URL (optional)</Label>
                         <Input
                             id="mapUrl"
                             name="mapUrl"
@@ -551,6 +566,52 @@ export const InvitationForm = () => {
                             </SelectContent>
                         </Select>
                     </div>
+                    
+                    {formData.theme === "family" && (
+                        <>
+                            <div className="flex items-center space-x-2">
+                                <Switch
+                                    id="showReligiousText"
+                                    checked={formData.showReligiousText}
+                                    onCheckedChange={(checked) => {
+                                        setFormData((prev) => ({ ...prev, showReligiousText: checked }));
+                                    }}
+                                />
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Label htmlFor="showReligiousText">Include Religious Text</Label>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Add religious text to your invitation
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
+                            
+                            {formData.showReligiousText && (
+                                <div>
+                                    <Label htmlFor="religion">Religion</Label>
+                                    <Select
+                                        value={formData.religion}
+                                        onValueChange={(value) => {
+                                            setFormData((prev) => ({ ...prev, religion: value }));
+                                        }}
+                                    >
+                                        <SelectTrigger className="border-wedding-secondary">
+                                            <SelectValue placeholder="Select religion" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="islam">Islam</SelectItem>
+                                            <SelectItem value="hinduism">Hinduism</SelectItem>
+                                            <SelectItem value="christianity">Christianity</SelectItem>
+                                            <SelectItem value="sikhism">Sikhism</SelectItem>
+                                            <SelectItem value="buddhism">Buddhism</SelectItem>
+                                            <SelectItem value="jainism">Jainism</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+                        </>
+                    )}
 
                     <div className="flex items-center space-x-2">
                         <Switch

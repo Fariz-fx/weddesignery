@@ -5,6 +5,15 @@ interface Translations {
     };
 }
 
+// Religious text translations
+export interface ReligiousTranslations {
+    [key: string]: {
+        original: string;
+        english: string;
+        tamil: string;
+    };
+}
+
 export const translations: Translations = {
     weddingInvitation: {
         english: "Wedding Invitation",
@@ -75,10 +84,10 @@ export const translations: Translations = {
         english: "and",
         tamil: "மற்றும்"
     },
-    on: {
-        english: "on",
-        tamil: "அன்று"
-    },
+    // on: {
+    //     english: "on",
+    //     tamil: "அன்று"
+    // },
     // Common time-related words
     am: {
         english: "AM",
@@ -175,6 +184,40 @@ export const getTranslation = (key: string, language: string = 'english'): strin
 };
 
 // Helper function to translate user-provided text with common words
+// Religious text translations for different religions
+export const religiousTranslations: ReligiousTranslations = {
+    islam: {
+        original: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
+        english: "In the name of Allah, the Most Gracious, the Most Merciful",
+        tamil: "அல்லாஹ்வின் பெயரால், மிகவும் கருணை மிக்க, மிகவும் இரக்கமுள்ள"
+    },
+    hinduism: {
+        original: "ॐ श्री गणेशाय नमः",
+        english: "Om, Salutations to Lord Ganesha",
+        tamil: "ஓம், ஸ்ரீ கணேசாய நம:"
+    },
+    christianity: {
+        original: "In the name of the Father, the Son, and the Holy Spirit",
+        english: "Blessed is the marriage that begins in God's name",
+        tamil: "தந்தை, மகன், பரிசுத்த ஆவியின் பெயரால், கடவுளின் பெயரில் தொடங்கும் திருமணம் ஆசீர்வதிக்கப்பட்டது"
+    },
+    sikhism: {
+        original: "ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ",
+        english: "One Universal Creator God, The Name Is Truth",
+        tamil: "ஒரே உலகளாவிய படைப்பாளர் கடவுள், பெயர் உண்மை"
+    },
+    buddhism: {
+        original: "बुद्धं शरणं गच्छामि",
+        english: "I take refuge in the Buddha",
+        tamil: "நான் புத்தரை சரணடைகிறேன்"
+    },
+    jainism: {
+        original: "णमो अरिहंताणं",
+        english: "I bow to the Arihantas (Enlightened Souls)",
+        tamil: "அரிஹந்தர்களுக்கு (ஞானம் பெற்ற ஆன்மாக்கள்) வணக்கம்"
+    }
+};
+
 export const translateUserInput = (text: string, language: string = 'english'): string => {
     if (language === 'english' || !text) return text;
     
