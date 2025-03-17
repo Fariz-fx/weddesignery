@@ -53,7 +53,7 @@ interface FormData {
     showReligiousText: boolean
 }
 
-import { getTranslation } from "@/lib/translations";
+import { getTranslation, religiousTranslations } from "@/lib/translations";
 
 export const InvitationForm = () => {
     const { toast } = useToast();
@@ -574,7 +574,18 @@ export const InvitationForm = () => {
                                     id="showReligiousText"
                                     checked={formData.showReligiousText}
                                     onCheckedChange={(checked) => {
-                                        setFormData((prev) => ({ ...prev, showReligiousText: checked }));
+                                        // If turning off religious text, no changes needed
+                                        // If turning on, ensure a religion is selected
+                                        if (checked && !formData.religion) {
+                                            // Default to first religion if none selected
+                                            setFormData((prev) => ({ 
+                                                ...prev, 
+                                                showReligiousText: checked,
+                                                religion: "islam" // Default selection
+                                            }));
+                                        } else {
+                                            setFormData((prev) => ({ ...prev, showReligiousText: checked }));
+                                        }
                                     }}
                                 />
                                 <Tooltip>
@@ -600,12 +611,11 @@ export const InvitationForm = () => {
                                             <SelectValue placeholder="Select religion" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="islam">Islam</SelectItem>
-                                            <SelectItem value="hinduism">Hinduism</SelectItem>
-                                            <SelectItem value="christianity">Christianity</SelectItem>
-                                            <SelectItem value="sikhism">Sikhism</SelectItem>
-                                            <SelectItem value="buddhism">Buddhism</SelectItem>
-                                            <SelectItem value="jainism">Jainism</SelectItem>
+                                            {Object.keys(religiousTranslations).map((religion) => (
+                                                <SelectItem key={religion} value={religion}>
+                                                    {religion.charAt(0).toUpperCase() + religion.slice(1)}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>

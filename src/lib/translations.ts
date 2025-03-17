@@ -17,7 +17,7 @@ export interface ReligiousTranslations {
 export const translations: Translations = {
     weddingInvitation: {
         english: "Wedding Invitation",
-        tamil: "நிக்காஹ் (திருமண) அழைப்பிதழ்"
+        tamil: "திருமண அழைப்பிதழ்"
     },
     joinCelebration: {
         english: "Cordially invite your esteemed presence with family and friends on the auspicious occasion of the wedding ceremony of our beloved daughter:",
@@ -182,10 +182,27 @@ export const translations: Translations = {
     }
 };
 
+// Cache for translations to improve performance
+const translationCache: Record<string, Record<string, string>> = {};
+
 export const getTranslation = (key: string, language: string = 'english'): string => {
+    // Check if we have this translation in cache
+    if (translationCache[key] && translationCache[key][language]) {
+        return translationCache[key][language];
+    }
+    
     const translation = translations[key];
     if (!translation) return key;
-    return translation[language] || translation.english;
+    
+    const result = translation[language] || translation.english;
+    
+    // Cache the result
+    if (!translationCache[key]) {
+        translationCache[key] = {};
+    }
+    translationCache[key][language] = result;
+    
+    return result;
 };
 
 // Helper function to translate user-provided text with common words

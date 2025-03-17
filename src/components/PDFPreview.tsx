@@ -135,7 +135,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                         <div className="mb-8">
                             {/* Religious Text Section - Only shown when showReligiousText is enabled */}
                             {formData.showReligiousText && formData.religion && religiousText && (
-                                <div className="mb-6 text-center">
+                                <div className="mb-6 text-center" style={{ maxHeight: '150px', overflow: 'auto' }}>
                                     <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
                                         {religiousText.original}
                                     </p>
@@ -214,7 +214,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                                     )}
                                     {formData.mapUrl && (
                                         <a
-                                            href={formData.mapUrl}
+                                            href={formData.mapUrl.startsWith('https://') || formData.mapUrl.startsWith('http://') ? formData.mapUrl : `https://maps.google.com/`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-500 hover:text-blue-700 underline text-sm"
@@ -239,7 +239,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                         <div className={!formData.tamilOnlyMode ? "mt-10 pt-10 border-t border-gray-300" : ""}>
                             {/* Religious Text Section - Only shown when showReligiousText is enabled */}
                             {formData.showReligiousText && formData.religion && religiousTextTamil && (
-                                <div className="mb-6 text-center">
+                                <div className="mb-6 text-center" style={{ maxHeight: '150px', overflow: 'auto' }}>
                                     <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
                                         {religiousTextTamil.original}
                                     </p>
@@ -313,7 +313,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                                     )}
                                     {formData.mapUrl && (
                                         <a
-                                            href={formData.mapUrl}
+                                            href={formData.mapUrl.startsWith('https://') || formData.mapUrl.startsWith('http://') ? formData.mapUrl : `https://maps.google.com/`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-500 hover:text-blue-700 underline text-sm"
