@@ -170,9 +170,11 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
 
                             {formData.date && formData.time && (
                                 <div className="my-4">
-                                    <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                        {themeMessage}
-                                    </p>
+                                    {!formData.personalizeInvitation && (
+                                        <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
+                                            {themeMessage}
+                                        </p>
+                                    )}
                                     {formData.date && (
                                         <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
                                             {new Date(formData.date).toLocaleDateString('en-US', {
@@ -272,9 +274,11 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
 
                             {formData.date && formData.time && (
                                 <div className="my-4">
-                                    <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                        {themeMessageTamil}
-                                    </p>
+                                    {!formData.personalizeInvitation && (
+                                        <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
+                                            {themeMessageTamil}
+                                        </p>
+                                    )}
                                     {formData.date && (
                                         <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
                                             {formatDateInTamil(formData.date)}
