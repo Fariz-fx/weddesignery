@@ -74,25 +74,46 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
+  // Sanitize the id to prevent XSS attacks
+  const sanitizedId = id.replace(/[^\w-]/g, '');
+  
+  // Generate CSS content with sanitized values
+  const cssContent = Object.entries(THEMES)
+    .map(([theme, prefix]) => {
+      const themeStyles = colorConfig
+        .map(([key, itemConfig]) => {
+          // Validate color format to ensure it's a valid CSS color
+          const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
+          
+          // Only allow valid CSS color formats
+          if (color && (
+            /^#([0-9A-F]{3}){1,2}$/i.test(color) || // Hex color
+            /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/i.test(color) || // RGB color
+            /^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*[0-1](\.\d+)?\s*\)$/i.test(color) || // RGBA color
+            /^hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\)$/i.test(color) || // HSL color
+            /^[a-z-]+$/i.test(color) // Named color
+          )) {
+            // Sanitize the key to prevent CSS injection
+            const sanitizedKey = key.replace(/[^\w-]/g, '');
+            return `  --color-${sanitizedKey}: ${color};`;
+          }
+          return null;
+        })
+        .filter(Boolean) // Remove null values
+        .join("\n");
+      
+      return `
+${prefix} [data-chart=${sanitizedId}] {
+${themeStyles}
+}
+`;
+    })
+    .join("\n");
+  
   return (
     <style
       dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
-          .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
-${colorConfig
-  .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
-  })
-  .join("\n")}
-}
-`
-          )
-          .join("\n"),
+        __html: cssContent
       }}
     />
   )
