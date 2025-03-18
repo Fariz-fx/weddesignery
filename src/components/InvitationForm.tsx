@@ -543,7 +543,9 @@ export const InvitationForm = () => {
                             onChange={(e) => {
                                 // Validate URL format before setting state
                                 const url = e.target.value;
-                                if (url === '' || url.match(/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/) || url.match(/^https?:\/\/(www\.)?google\.com\/maps\/.*$/)) {
+                                const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)$/;
+                                const mapsPattern = /^https?:\/\/(www\.)?google\.com\/maps\/.*$/;
+                                if (url === '' || urlPattern.test(url) || mapsPattern.test(url)) {
                                     handleInputChange(e);
                                 } else {
                                     // If invalid URL, show toast or handle accordingly
