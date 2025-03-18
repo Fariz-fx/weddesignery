@@ -38,7 +38,7 @@ interface PDFPreviewProps {
         useSecondaryLanguage: boolean,
         language: string,
         tamilOnlyMode?: boolean, // Add optional tamilOnlyMode flag
-        religion: string,
+        religion?: string,
         showReligiousText: boolean
     };
 }

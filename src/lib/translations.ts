@@ -187,7 +187,7 @@ const translationCache: Record<string, Record<string, string>> = {};
 
 export const getTranslation = (key: string, language: string = 'english'): string => {
     // Check if we have this translation in cache
-    if (translationCache[key] && translationCache[key][language]) {
+    if (translationCache[key]?.[language]) {
         return translationCache[key][language];
     }
     
