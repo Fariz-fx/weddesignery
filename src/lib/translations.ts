@@ -297,8 +297,24 @@ export const translateUserInput = (text: string, language: string = 'english'): 
             if (lowerText.includes(englishWord)) {
                 const tamilWord = translations[key][language];
                 // Use case-insensitive replacement to preserve original casing
-                const regex = new RegExp(englishWord, 'gi');
-                translatedText = translatedText.replace(regex, tamilWord);
+                // Limit the size of the input to prevent ReDoS attacks
+                if (englishWord.length > 100 || translatedText.length > 10000) {
+                    return; // Skip this iteration if input is too large
+                }
+                
+                // Escape special regex characters to prevent injection
+                const escapedWord = englishWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedWord, 'gi');
+                
+                // Limit replacements to prevent excessive processing
+                let count = 0;
+                const maxReplacements = 100;
+                translatedText = translatedText.replace(regex, (match) => {
+                    if (count++ < maxReplacements) {
+                        return tamilWord;
+                    }
+                    return match; // Stop replacing after max replacements
+                });
             }
         });
     }

@@ -3,6 +3,31 @@ import React, { forwardRef } from 'react';
 import { backgroundTemplates } from "@/lib/background-templates";
 import { getTranslation, translateUserInput, religiousTranslations } from "@/lib/translations";
 
+// Helper function to validate and sanitize URLs
+const validateAndSanitizeUrl = (url: string): string => {
+    // Check if URL is empty or undefined
+    if (!url) return 'https://maps.google.com/';
+    
+    // Trim the URL to remove any leading/trailing whitespace
+    const trimmedUrl = url.trim();
+    
+    // Only allow http:// and https:// protocols
+    if (trimmedUrl.startsWith('https://') || trimmedUrl.startsWith('http://')) {
+        // Validate URL format using URL constructor
+        try {
+            new URL(trimmedUrl);
+            // URL is valid, return it
+            return trimmedUrl;
+        } catch (e) {
+            // URL is invalid, return default
+            return 'https://maps.google.com/';
+        }
+    }
+    
+    // If URL doesn't start with http:// or https://, return default
+    return 'https://maps.google.com/';
+};
+
 // Helper function to transliterate names to Tamil
 const transliterateName = (name: string, language: string = 'english'): string => {
     if (language === 'english' || !name) return name;
@@ -214,7 +239,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                                     )}
                                     {formData.mapUrl && (
                                         <a
-                                            href={formData.mapUrl.startsWith('https://') || formData.mapUrl.startsWith('http://') ? formData.mapUrl : `https://maps.google.com/`}
+                                            href={validateAndSanitizeUrl(formData.mapUrl)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-500 hover:text-blue-700 underline text-sm"
@@ -313,7 +338,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                                     )}
                                     {formData.mapUrl && (
                                         <a
-                                            href={formData.mapUrl.startsWith('https://') || formData.mapUrl.startsWith('http://') ? formData.mapUrl : `https://maps.google.com/`}
+                                            href={validateAndSanitizeUrl(formData.mapUrl)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-500 hover:text-blue-700 underline text-sm"

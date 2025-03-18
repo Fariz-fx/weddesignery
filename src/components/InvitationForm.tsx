@@ -540,7 +540,20 @@ export const InvitationForm = () => {
                             name="mapUrl"
                             type="url"
                             value={formData.mapUrl}
-                            onChange={handleInputChange}
+                            onChange={(e) => {
+                                // Validate URL format before setting state
+                                const url = e.target.value;
+                                if (url === '' || url.match(/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/) || url.match(/^https?:\/\/(www\.)?google\.com\/maps\/.*$/)) {
+                                    handleInputChange(e);
+                                } else {
+                                    // If invalid URL, show toast or handle accordingly
+                                    toast({
+                                        title: "Invalid URL",
+                                        description: "Please enter a valid URL starting with http:// or https://",
+                                        variant: "destructive"
+                                    });
+                                }
+                            }}
                             className="border-wedding-secondary"
                             placeholder="https://maps.google.com/..."
                         />
