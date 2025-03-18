@@ -16,7 +16,7 @@ interface ColorPickerProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
   ({ value, onValueChange,id, className, ...props }, ref) => {
-     const handleChangeComplete = (color:any)=>{
+     const handleChangeComplete = (color: { hex: string })=>{
          onValueChange(color.hex);
      }
     return (

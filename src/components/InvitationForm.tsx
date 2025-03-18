@@ -175,7 +175,7 @@ export const InvitationForm = () => {
             console.error('Failed to generate PDF:', error);
             toast({ 
                 title: "Failed", 
-                description: `Failed to generate the PDF: ${error.message}`,
+                description: `Failed to generate the PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
                 variant: "destructive" 
             });
         }
@@ -278,7 +278,7 @@ export const InvitationForm = () => {
             console.error('Failed to generate image:', error);
             toast({ 
                 title: "Failed", 
-                description: `Failed to generate the image: ${error.message}`,
+                description: `Failed to generate the image: ${error instanceof Error ? error.message : 'Unknown error'}`,
                 variant: "destructive" 
             });
         }
