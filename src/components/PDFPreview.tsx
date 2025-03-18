@@ -1,7 +1,32 @@
 import { Card } from "@/components/ui/card";
 import React, { forwardRef } from 'react';
 import { backgroundTemplates } from "@/lib/background-templates";
-import { getTranslation, translateUserInput } from "@/lib/translations";
+import { getTranslation, translateUserInput, religiousTranslations } from "@/lib/translations";
+
+// Helper function to validate and sanitize URLs
+const validateAndSanitizeUrl = (url: string): string => {
+    // Check if URL is empty or undefined
+    if (!url) return 'https://maps.google.com/';
+    
+    // Trim the URL to remove any leading/trailing whitespace
+    const trimmedUrl = url.trim();
+    
+    // Only allow http:// and https:// protocols
+    if (trimmedUrl.startsWith('https://') || trimmedUrl.startsWith('http://')) {
+        // Validate URL format using URL constructor
+        try {
+            new URL(trimmedUrl);
+            // URL is valid, return it
+            return trimmedUrl;
+        } catch (e) {
+            // URL is invalid, return default
+            return 'https://maps.google.com/';
+        }
+    }
+    
+    // If URL doesn't start with http:// or https://, return default
+    return 'https://maps.google.com/';
+};
 
 // Helper function to transliterate names to Tamil
 const transliterateName = (name: string, language: string = 'english'): string => {
@@ -23,20 +48,23 @@ interface PDFPreviewProps {
         brideQualification: string;
         groomQualification: string;
         venue: string;
+        venueAddress: string;
         mapUrl: string;
-         theme: string;
+        theme: string;
         personalizeInvitation: boolean;
         inviteeName: string;
-         personalMessage: string;
+        personalMessage: string;
         useCustomization: boolean;
         backgroundColor:string;
-         textColor:string;
-         backgroundTemplate:string;
-         brideNameColor:string,
-          groomNameColor:string,
+        textColor:string;
+        backgroundTemplate:string;
+        brideNameColor:string,
+        groomNameColor:string,
         useSecondaryLanguage: boolean,
         language: string,
-        tamilOnlyMode?: boolean // Add optional tamilOnlyMode flag
+        tamilOnlyMode?: boolean, // Add optional tamilOnlyMode flag
+        religion?: string,
+        showReligiousText: boolean
     };
 }
 
@@ -55,9 +83,27 @@ const getThemeMessage = (theme: string, language: string = 'english') => {
     }
 };
 
+// Helper function to get religious text based on religion and language
+const getReligiousText = (religion: string, language: string = 'english'): { original: string; translation: string } => {
+    const religiousText = religiousTranslations[religion];
+    if (!religiousText) {
+        return {
+            original: "",
+            translation: ""
+        };
+    }
+    
+    return {
+        original: religiousText.original,
+        translation: language === 'english' ? religiousText.english : religiousText.tamil
+    };
+};
+
 const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, ref) => {
     const themeMessage = getThemeMessage(formData.theme, 'english');
     const themeMessageTamil = formData.useSecondaryLanguage ? getThemeMessage(formData.theme, formData.language) : '';
+    const religiousText = formData.showReligiousText && formData.religion ? getReligiousText(formData.religion, 'english') : undefined;
+    const religiousTextTamil = formData.showReligiousText && formData.religion ? getReligiousText(formData.religion, formData.language) : undefined;
     
     const getCalendarLink = () => {
         if (!formData.date || !formData.time) return null;
@@ -106,21 +152,33 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
        } : {};
     return (
         <div className="animate-fadeIn">
-          <Card className="p-8 shadow-lg min-h-[600px]" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8',  ...backgroundImageStyle }}>
+          <Card className="p-8 shadow-lg min-h-[600px] relative" ref={ref} style={{ backgroundColor: formData.backgroundColor ||'#f8f8f8',  ...backgroundImageStyle }}>
             <div className="text-center space-y-6">
                 <div style={{color: formData.textColor || '#333333' }}>
                     {/* English Content Section - Hide when in Tamil-only mode */}
                     {!formData.tamilOnlyMode && (
                         <div className="mb-8">
-                            {formData.personalizeInvitation && formData.inviteeName && (
-                                <h2 className="text-xl mb-4" style={{color: formData.textColor || '#333333'}}>
-                                    {themeMessage} {formData.inviteeName},
-                                </h2>
+                            {/* Religious Text Section - Only shown when showReligiousText is enabled */}
+                            {formData.showReligiousText && formData.religion && religiousText && (
+                                <div className="mb-6 text-center" style={{ maxHeight: '150px', overflow: 'auto' }}>
+                                    <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
+                                        {religiousText.original}
+                                    </p>
+                                    <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>
+                                        {religiousText.translation}
+                                    </p>
+                                </div>
                             )}
 
                             <h1 className="text-3xl font-semibold mb-2" style={{color: formData.textColor || '#333333'}}>
                                 {getTranslation("weddingInvitation", 'english')}
                             </h1>
+                            
+                            {formData.personalizeInvitation && formData.inviteeName && (
+                                <h2 className="text-xl my-4" style={{color: formData.textColor || '#333333'}}>
+                                    {themeMessage} {formData.inviteeName},
+                                </h2>
+                            )}
 
                             <div className="my-8">
                                 <p className="text-2xl" style={{color: formData.brideNameColor || '#FFC0CB'}}>
@@ -137,9 +195,11 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
 
                             {formData.date && formData.time && (
                                 <div className="my-4">
-                                    <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                        {getTranslation("joinCelebration", 'english')}
-                                    </p>
+                                    {!formData.personalizeInvitation && (
+                                        <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
+                                            {themeMessage}
+                                        </p>
+                                    )}
                                     {formData.date && (
                                         <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
                                             {new Date(formData.date).toLocaleDateString('en-US', {
@@ -166,15 +226,20 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                                     </a>
                                 </div>
                             )}
+
+                            
                             {formData.venue && (
                                 <div className="my-4">
                                     <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
                                         {getTranslation("venue", 'english')}
                                     </p>
                                     <p className="text-xl" style={{color: formData.textColor || '#333333'}}>{formData.venue}</p>
+                                    {formData.venueAddress && (
+                                        <p className="text-md" style={{color: formData.textColor || '#333333'}}>{formData.venueAddress}</p>
+                                    )}
                                     {formData.mapUrl && (
                                         <a
-                                            href={formData.mapUrl}
+                                            href={validateAndSanitizeUrl(formData.mapUrl)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-500 hover:text-blue-700 underline text-sm"
@@ -197,15 +262,27 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                     {/* Tamil Content Section - Only shown when secondary language is enabled */}
                     {formData.useSecondaryLanguage && (
                         <div className={!formData.tamilOnlyMode ? "mt-10 pt-10 border-t border-gray-300" : ""}>
-                            {formData.personalizeInvitation && formData.inviteeName && (
-                                <h2 className="text-xl mb-4" style={{color: formData.textColor || '#333333'}}>
-                                    {themeMessageTamil} {formData.inviteeName},
-                                </h2>
+                            {/* Religious Text Section - Only shown when showReligiousText is enabled */}
+                            {formData.showReligiousText && formData.religion && religiousTextTamil && (
+                                <div className="mb-6 text-center" style={{ maxHeight: '150px', overflow: 'auto' }}>
+                                    <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
+                                        {religiousTextTamil.original}
+                                    </p>
+                                    <p className="text-sm italic" style={{color: formData.textColor || '#333333'}}>
+                                        {religiousTextTamil.translation}
+                                    </p>
+                                </div>
                             )}
 
                             <h1 className="text-3xl font-semibold mb-2" style={{color: formData.textColor || '#333333'}}>
                                 {getTranslation("weddingInvitation", formData.language)}
                             </h1>
+                            
+                            {formData.personalizeInvitation && formData.inviteeName && (
+                                <h2 className="text-xl my-4" style={{color: formData.textColor || '#333333'}}>
+                                    {themeMessageTamil} {formData.inviteeName},
+                                </h2>
+                            )}
 
                             <div className="my-8">
                                 <p className="text-2xl" style={{color: formData.brideNameColor || '#FFC0CB'}}>
@@ -222,9 +299,11 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
 
                             {formData.date && formData.time && (
                                 <div className="my-4">
-                                    <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
-                                        {getTranslation("joinCelebration", formData.language)}
-                                    </p>
+                                    {!formData.personalizeInvitation && (
+                                        <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
+                                            {themeMessageTamil}
+                                        </p>
+                                    )}
                                     {formData.date && (
                                         <p className="text-xl font-semibold" style={{color: formData.textColor || '#333333'}}>
                                             {formatDateInTamil(formData.date)}
@@ -246,15 +325,20 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                                     </a>
                                 </div>
                             )}
+
+                            
                             {formData.venue && (
                                 <div className="my-4">
                                     <p className="text-lg" style={{color: formData.textColor || '#333333'}}>
                                         {getTranslation("venue", formData.language)}
                                     </p>
                                     <p className="text-xl" style={{color: formData.textColor || '#333333'}}>{translateUserInput(formData.venue, formData.language)}</p>
+                                    {formData.venueAddress && (
+                                        <p className="text-md" style={{color: formData.textColor || '#333333'}}>{translateUserInput(formData.venueAddress, formData.language)}</p>
+                                    )}
                                     {formData.mapUrl && (
                                         <a
-                                            href={formData.mapUrl}
+                                            href={validateAndSanitizeUrl(formData.mapUrl)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-500 hover:text-blue-700 underline text-sm"
@@ -274,6 +358,15 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                         </div>
                     )}
                 </div>
+            </div>
+            {/* Watermark */}
+            <div className="absolute bottom-2 right-3" style={{color: formData.textColor || '#333333', opacity: 0.7, fontSize: '0.7rem'}}>
+              {!formData.tamilOnlyMode && (
+                <p>{getTranslation("madeByFarees", "english")}</p>
+              )}
+              {formData.useSecondaryLanguage && formData.tamilOnlyMode && (
+                <p>{getTranslation("madeByFarees", formData.language)}</p>
+              )}
             </div>
           </Card>
         </div>

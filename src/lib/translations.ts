@@ -5,14 +5,23 @@ interface Translations {
     };
 }
 
+// Religious text translations
+export interface ReligiousTranslations {
+    [key: string]: {
+        original: string;
+        english: string;
+        tamil: string;
+    };
+}
+
 export const translations: Translations = {
     weddingInvitation: {
         english: "Wedding Invitation",
         tamil: "திருமண அழைப்பிதழ்"
     },
     joinCelebration: {
-        english: "Join us in celebration on:",
-        tamil: "எங்கள் திருமண விழாவில் கலந்து கொள்ளுமாறு அன்புடன் அழைக்கிறோம்:"
+        english: "Cordially invite your esteemed presence with family and friends on the auspicious occasion of the wedding ceremony of our beloved daughter:",
+        tamil: "எங்கள் நிக்காஹ் (திருமண) விழாவில் கலந்து கொள்ளுமாறு அன்புடன் அழைக்கிறோம்:"
     },
     venue: {
         english: "Venue:",
@@ -27,16 +36,16 @@ export const translations: Translations = {
         tamil: "வரைபடத்தில் காண்க"
     },
     familyTheme: {
-        english: "With joy in our hearts, we invite our beloved family member",
-        tamil: "மகிழ்ச்சியுடன், எங்கள் அன்பான குடும்ப உறுப்பினரை அழைக்கிறோம்"
+        english: "Cordially invite your esteemed presence with family and friends on the auspicious occasion of the wedding ceremony of our beloved daughter",
+        tamil: "எங்கள் நிக்காஹ் (திருமண) விழாவில் கலந்து கொள்ளுமாறு அன்புடன் அழைக்கிறோம்"
     },
     friendsTheme: {
-        english: "To our dearest friend",
-        tamil: "எங்கள் அன்பு நண்பருக்கு"
+        english: "I am excited to share with you that I am getting married soon, and I would be honored to have you join me on this special day",
+        tamil: "நான் விரைவில் திருமணம் செய்து கொள்ளப் போகிறேன் என்பதை உங்களுடன் பகிர்ந்து கொள்வதில் நான் மகிழ்ச்சியடைகிறேன், இந்த சிறப்பு நாளில் நீங்கள் என்னுடன் இணைந்தால் நான் பெருமைப்படுவேன்"
     },
     workTheme: {
-        english: "We cordially invite our esteemed colleague",
-        tamil: "எங்கள் மதிப்பிற்குரிய சகஊழியரை அன்புடன் அழைக்கிறோம்"
+        english: "I warmly welcome you to my marriage ceremony and ask that you bestow your blessings on us. I would be overjoyed to have your presence",
+        tamil: "எனது திருமண விழாவிற்கு உங்களை அன்புடன் வரவேற்கிறேன், உங்கள் ஆசீர்வாதங்களை எங்களுக்கு வழங்குமாறு கேட்டுக்கொள்கிறேன். உங்கள் வருகை எனக்கு மிகுந்த மகிழ்ச்சியை அளிக்கும்"
     },
     neighborsTheme: {
         english: "To our wonderful neighbor",
@@ -71,14 +80,14 @@ export const translations: Translations = {
         english: "at",
         tamil: "இல்"
     },
-    and: {
-        english: "and",
-        tamil: "மற்றும்"
-    },
-    on: {
-        english: "on",
-        tamil: "அன்று"
-    },
+    // and: {
+    //     english: "and",
+    //     tamil: "மற்றும்"
+    // },
+    // on: {
+    //     english: "on",
+    //     tamil: "அன்று"
+    // },
     // Common time-related words
     am: {
         english: "AM",
@@ -165,16 +174,72 @@ export const translations: Translations = {
     december: {
         english: "December",
         tamil: "டிசம்பர்"
+    },
+    madeByFarees: {
+        english: "Made by Farees",
+        // tamil: "Farees ஆல் உருவாக்கப்பட்டது"
+        tamil: "Made by Farees",
     }
 };
 
+// Cache for translations to improve performance
+const translationCache: Record<string, Record<string, string>> = {};
+
 export const getTranslation = (key: string, language: string = 'english'): string => {
+    // Check if we have this translation in cache
+    if (translationCache[key]?.[language]) {
+        return translationCache[key][language];
+    }
+    
     const translation = translations[key];
     if (!translation) return key;
-    return translation[language] || translation.english;
+    
+    const result = translation[language] || translation.english;
+    
+    // Cache the result
+    if (!translationCache[key]) {
+        translationCache[key] = {};
+    }
+    translationCache[key][language] = result;
+    
+    return result;
 };
 
 // Helper function to translate user-provided text with common words
+// Religious text translations for different religions
+export const religiousTranslations: ReligiousTranslations = {
+    islam: {
+        original: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
+        english: "In the name of Allah, the Most Gracious, the Most Merciful",
+        tamil: "அல்லாஹ்வின் பெயரால், மிகவும் கருணை மிக்க, மிகவும் இரக்கமுள்ள"
+    },
+    hinduism: {
+        original: "ॐ श्री गणेशाय नमः",
+        english: "Om, Salutations to Lord Ganesha",
+        tamil: "ஓம், ஸ்ரீ கணேசாய நம:"
+    },
+    christianity: {
+        original: "In the name of the Father, the Son, and the Holy Spirit",
+        english: "Blessed is the marriage that begins in God's name",
+        tamil: "தந்தை, மகன், பரிசுத்த ஆவியின் பெயரால், கடவுளின் பெயரில் தொடங்கும் திருமணம் ஆசீர்வதிக்கப்பட்டது"
+    },
+    sikhism: {
+        original: "ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ",
+        english: "One Universal Creator God, The Name Is Truth",
+        tamil: "ஒரே உலகளாவிய படைப்பாளர் கடவுள், பெயர் உண்மை"
+    },
+    buddhism: {
+        original: "बुद्धं शरणं गच्छामि",
+        english: "I take refuge in the Buddha",
+        tamil: "நான் புத்தரை சரணடைகிறேன்"
+    },
+    jainism: {
+        original: "णमो अरिहंताणं",
+        english: "I bow to the Arihantas (Enlightened Souls)",
+        tamil: "அரிஹந்தர்களுக்கு (ஞானம் பெற்ற ஆன்மாக்கள்) வணக்கம்"
+    }
+};
+
 export const translateUserInput = (text: string, language: string = 'english'): string => {
     if (language === 'english' || !text) return text;
     
@@ -232,8 +297,24 @@ export const translateUserInput = (text: string, language: string = 'english'): 
             if (lowerText.includes(englishWord)) {
                 const tamilWord = translations[key][language];
                 // Use case-insensitive replacement to preserve original casing
-                const regex = new RegExp(englishWord, 'gi');
-                translatedText = translatedText.replace(regex, tamilWord);
+                // Limit the size of the input to prevent ReDoS attacks
+                if (englishWord.length > 100 || translatedText.length > 10000) {
+                    return; // Skip this iteration if input is too large
+                }
+                
+                // Escape special regex characters to prevent injection
+                const escapedWord = englishWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedWord, 'gi');
+                
+                // Limit replacements to prevent excessive processing
+                let count = 0;
+                const maxReplacements = 100;
+                translatedText = translatedText.replace(regex, (match) => {
+                    if (count++ < maxReplacements) {
+                        return tamilWord;
+                    }
+                    return match; // Stop replacing after max replacements
+                });
             }
         });
     }
