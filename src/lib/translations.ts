@@ -266,8 +266,8 @@ export const translateUserInput = (text: string, language: string = 'english'): 
                 const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
                 const month = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
 
-                let tamilDay = translations[dayOfWeek]?.[language] || dayOfWeek; // Use helper safely
-                let tamilMonth = translations[month]?.[language] || month;
+                const tamilDay = translations[dayOfWeek]?.[language] || dayOfWeek; // Use helper safely
+                const tamilMonth = translations[month]?.[language] || month;
 
                 // Format in Tamil style (Adjust format string as needed)
                 // Example: சனிக்கிழமை, ஏப்ரல் 26, 2025
