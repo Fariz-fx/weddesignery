@@ -78,6 +78,10 @@ const getThemeMessage = (theme: string, language: string = 'english') => {
             return getTranslation("workTheme", language);
          case "neighbors":
             return getTranslation("neighborsTheme", language);
+         case "bridesbrotherfriends":
+            return getTranslation("bridesbrotherFriendTheme", language);
+         case "bridesbrotherworkcolleagues":
+            return getTranslation("bridesbrotherworkcolleagueTheme", language);
         default:
             return getTranslation("defaultTheme", language);
     }

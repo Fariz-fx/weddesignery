@@ -16,8 +16,8 @@ export interface ReligiousTranslations {
 
 export const translations: Translations = {
     weddingInvitation: {
-        english: "Wedding Invitation",
-        tamil: "திருமண அழைப்பிதழ்"
+        english: "Our Wedding Invitation",
+        tamil: "எங்கள் திருமண அழைப்பிதழ்"
     },
     joinCelebration: {
         english: "Cordially invite your esteemed presence with family and friends on the auspicious occasion of the wedding ceremony of our beloved daughter:",
@@ -50,6 +50,14 @@ export const translations: Translations = {
     neighborsTheme: {
         english: "To our wonderful neighbor",
         tamil: "எங்கள் அருமை அண்டை வீட்டாருக்கு"
+    },
+    bridesbrotherFriendTheme: {
+        english: "I'm thrilled to invite you to my sister's wedding. As my best friend, your presence would mean the world to me on this special day",
+        tamil: "என் சகோதரியின் திருமணத்திற்கு உங்களை அழைக்க கினக்கமுள்ள"
+    },
+    bridesbrotherworkcolleagueTheme: {
+        english: "I'm so happy to invite you to celebrate a very special occasion – my sister's wedding! It would be wonderful to have you there, sharing in our family's joy as she begins this new chapter. Your presence would mean a lot to me and my family",
+        tamil: "என் தங்கை திருமண விழாவுக்கு உங்களை அழைப்பதில் மிக்க மகிழ்ச்சி! இது எங்கள் குடும்பத்திற்கு ஒரு முக்கியமான, மகிழ்ச்சியான தருணம். இந்த கொண்டாட்டத்தில் நீங்களும் எங்களுடன் வந்து கலந்து கொண்டால் மிகவும் சந்தோஷப்படுவோம். உங்கள் வருகை எங்களுக்கு மேலும் மகிழ்ச்சியூட்டும்."
     },
     defaultTheme: {
         english: "We joyfully invite",
@@ -211,7 +219,7 @@ export const religiousTranslations: ReligiousTranslations = {
     islam: {
         original: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
         english: "In the name of Allah, the Most Gracious, the Most Merciful",
-        tamil: "அல்லாஹ்வின் பெயரால், மிகவும் கருணை மிக்க, மிகவும் இரக்கமுள்ள"
+        tamil: "அல்லாஹ்வின் பெயரால், ிகவும் கருணை ிக்க, ிகவும் இரக்கமுள்ள"
     },
     hinduism: {
         original: "ॐ श्री गणेशाय नमः",
@@ -242,82 +250,80 @@ export const religiousTranslations: ReligiousTranslations = {
 
 export const translateUserInput = (text: string, language: string = 'english'): string => {
     if (language === 'english' || !text) return text;
-    
-    // For simple implementation, we'll just replace known words
-    // In a production app, you would use a proper translation API
+
     let translatedText = text;
-    
-    // Convert text to lowercase for matching
     const lowerText = text.toLowerCase();
-    
-    // First check if the entire text matches a translation key
-    Object.keys(translations).forEach(key => {
-        if (translations[key].english.toLowerCase() === lowerText) {
-            translatedText = translations[key][language] || text;
+
+    // --- Date Parsing Logic (Keep as is) ---
+    // Check if it looks like a date format that the Date parser can handle
+    // Added a check for common date patterns to avoid parsing random strings with '/'
+    const isLikelyDate = /^\d{4}-\d{2}-\d{2}$/.test(text) || /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(text) || /^[A-Za-z]+,\s[A-Za-z]+\s\d{1,2},\s\d{4}$/.test(text);
+
+    if (isLikelyDate) {
+        try {
+            const date = new Date(text);
+            if (!isNaN(date.getTime())) {
+                const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+                const month = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
+
+                const tamilDay = translations[dayOfWeek]?.[language] || dayOfWeek; // Use helper safely
+                const tamilMonth = translations[month]?.[language] || month;
+
+                // Format in Tamil style (Adjust format string as needed)
+                // Example: சனிக்கிழமை, ஏப்ரல் 26, 2025
+                return `${tamilDay}, ${tamilMonth} ${date.getDate()}, ${date.getFullYear()}`;
+            }
+        } catch (e) {
+            console.error("Date parsing failed for:", text, e);
+            // If date parsing fails, continue to word replacement
+        }
+    }
+
+    // --- General Word Replacement Logic ---
+
+    // Only attempt to replace specific common words/days/months etc.
+    // Define the keys we want to use for word replacement explicitly
+    const replaceableKeys = [
+        'at', 'am', 'pm',
+        'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+        'january', 'february', 'march', 'april', 'may', 'june', 'july',
+        'august', 'september', 'october', 'november', 'december',
+        'year', 'time', 'month', 'day', 'hour', 'minute', 'second'
+        // Add other specific words if needed, but avoid overly generic keys
+    ];
+
+    replaceableKeys.forEach(key => {
+        if (translations[key]) {
+            const englishWord = translations[key].english;
+            const tamilWord = translations[key][language]; // Get Tamil translation
+
+            // Only proceed if a Tamil translation exists for this key
+            if (tamilWord && tamilWord !== englishWord) {
+                const lowerEnglishWord = englishWord.toLowerCase();
+
+                // Check if the lowercased input *contains* the lowercased English word.
+                // This is a quick check, the regex handles the actual replacement logic.
+                if (lowerText.includes(lowerEnglishWord)) {
+
+                    // Escape special regex characters in the English word
+                    const escapedWord = lowerEnglishWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+                    // *** THE FIX: Add word boundaries (\b) to the regex ***
+                    // This ensures we match whole words only. 'gi' for global, case-insensitive.
+                    const regex = new RegExp(`\\b${escapedWord}\\b`, 'gi');
+
+                    // Limit complexity/length to prevent ReDoS - basic check
+                    if (translatedText.length > 5000) {
+                        console.warn("Skipping translation for potentially too long input.");
+                        return; // Skip further replacements for this input if too long
+                    }
+
+                    // Perform the replacement
+                    // Use the original case tamilWord from translations
+                    translatedText = translatedText.replace(regex, tamilWord);
+                }
+            }
         }
     });
-    
-    // If the text wasn't fully translated, try to translate parts of it
-    if (translatedText === text) {
-        // Special handling for dates
-        if (/^\d{4}-\d{2}-\d{2}$/.exec(text) || text.includes('/')) {
-            // This is likely a date, try to parse and format it
-            try {
-                const date = new Date(text);
-                if (!isNaN(date.getTime())) {
-                    // Get day of week
-                    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-                    const month = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
-                    
-                    // Translate day and month
-                    let tamilDay = dayOfWeek;
-                    let tamilMonth = month;
-                    
-                    Object.keys(translations).forEach(key => {
-                        if (translations[key].english.toLowerCase() === dayOfWeek) {
-                            tamilDay = translations[key][language];
-                        }
-                        if (translations[key].english.toLowerCase() === month) {
-                            tamilMonth = translations[key][language];
-                        }
-                    });
-                    
-                    // Format in Tamil style
-                    return `${tamilDay}, ${tamilMonth} ${date.getDate()}, ${date.getFullYear()}`;
-                }
-            } catch (e) {
-                // If date parsing fails, continue with word replacement
-            }
-        }
-        
-        // Replace individual words
-        Object.keys(translations).forEach(key => {
-            // Replace if the English word is found in the text
-            const englishWord = translations[key].english.toLowerCase();
-            if (lowerText.includes(englishWord)) {
-                const tamilWord = translations[key][language];
-                // Use case-insensitive replacement to preserve original casing
-                // Limit the size of the input to prevent ReDoS attacks
-                if (englishWord.length > 100 || translatedText.length > 10000) {
-                    return; // Skip this iteration if input is too large
-                }
-                
-                // Escape special regex characters to prevent injection
-                const escapedWord = englishWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const regex = new RegExp(escapedWord, 'gi');
-                
-                // Limit replacements to prevent excessive processing
-                let count = 0;
-                const maxReplacements = 100;
-                translatedText = translatedText.replace(regex, (match) => {
-                    if (count++ < maxReplacements) {
-                        return tamilWord;
-                    }
-                    return match; // Stop replacing after max replacements
-                });
-            }
-        });
-    }
-    
     return translatedText;
 };
