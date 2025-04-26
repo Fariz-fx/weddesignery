@@ -27,6 +27,8 @@ import { backgroundTemplates } from "@/lib/background-templates";
 import TamilKeyboard from "./TamilKeyboard";
 import ThemeEditor, { Theme } from "./ThemeEditor";
 import { useThemes } from "@/contexts/ThemeContext";
+import { getTranslation, religiousTranslations } from "@/lib/translations";
+
 interface FormData {
     brideNames: string;
     groomNames: string;
@@ -55,11 +57,9 @@ interface FormData {
     showReligiousText: boolean
 }
 
-import { getTranslation, religiousTranslations } from "@/lib/translations";
-
 export const InvitationForm = () => {
     const { toast } = useToast();
-    const { themes, addTheme, editTheme } = useThemes();
+    const { themes, addTheme, editTheme, deleteTheme } = useThemes(); // Added deleteTheme here
     const [formData, setFormData] = useState<FormData>({
         brideNames: "",
         groomNames: "",
@@ -590,6 +590,7 @@ export const InvitationForm = () => {
                             selectedTheme={formData.theme}
                             onThemeAdded={addTheme}
                             onThemeEdited={editTheme}
+                            onThemeDeleted={deleteTheme}
                             language={formData.language}
                         />
                     </div>
@@ -717,4 +718,4 @@ export const InvitationForm = () => {
         </div>
         </TooltipProvider>
     );
-};
+} // Add the missing closing brace
