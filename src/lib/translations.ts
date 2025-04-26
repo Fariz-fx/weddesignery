@@ -16,8 +16,8 @@ export interface ReligiousTranslations {
 
 export const translations: Translations = {
     weddingInvitation: {
-        english: "Wedding Invitation",
-        tamil: "திருமண அழைப்பிதழ்"
+        english: "Our Wedding Invitation",
+        tamil: "எங்கள் திருமண அழைப்பிதழ்"
     },
     joinCelebration: {
         english: "Cordially invite your esteemed presence with family and friends on the auspicious occasion of the wedding ceremony of our beloved daughter:",
