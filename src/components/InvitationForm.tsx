@@ -575,8 +575,8 @@ export const InvitationForm = () => {
                                 <SelectItem value="friends">Best Friends</SelectItem>
                                  <SelectItem value="work">Work Colleagues</SelectItem>
                                 <SelectItem value="neighbors">Neighbors</SelectItem>
-                                <SelectItem value="bridesbrowtherfriends">Bride's Brother Friends</SelectItem>
-                                <SelectItem value="bridebrotherworkcolleague">Bride's Brother Work Colleagues</SelectItem>
+                                <SelectItem value="bridesbrotherfriends">Bride's Brother Friends</SelectItem>
++                               <SelectItem value="bridesbrotherworkcolleagues">Bride's Brother Work Colleagues</SelectItem> 
                                  <SelectItem value="elegant">Elegant</SelectItem>
                                 <SelectItem value="modern">Modern</SelectItem>
                                 <SelectItem value="rustic">Rustic</SelectItem>
