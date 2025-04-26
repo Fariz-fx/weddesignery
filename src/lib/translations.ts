@@ -51,11 +51,11 @@ export const translations: Translations = {
         english: "To our wonderful neighbor",
         tamil: "எங்கள் அருமை அண்டை வீட்டாருக்கு"
     },
-    bridesbrothersFriendTheme: {
+    bridesbrotherFriendTheme: {
         english: "Hey buddy! I'm thrilled to invite you to my sister's wedding. As my best friend, your presence would mean the world to me on this special day",
-        tamil: "நண்பா! என் சகோதரியின் திருமணத்திற்கு உங்களை அழைக்க மகிழ்ச்சியடைகிறேன். என் சிறந்த நண்பராக, இந்த சிறப்பு நாளில் உங்கள் இருப்பு எனக்கு மிகவும் முக்கியமானது"
+        tamil: "நண்பா! என் சகோதரியின் திருமணத்திற்கு உங்களை அழைக்க கினக்கமுள்ள"
     },
-    bridebrotherworkcolleagueTheme: {
+    bridesbrotherworkcolleagueTheme: {
         english: "I warmly welcome you to my sister's marriage ceremony and ask that you bestow your blessings on us. I would be overjoyed to have your presence",
         tamil: "எனது தங்கை திருமண விழாவிற்கு உங்களை அன்புடன் வரவேற்கிறேன், உங்கள் ஆசீர்வாதங்களை எங்களுக்கு வழங்குமாறு கேட்டுக்கொள்கிறேன். உங்கள் வருகை எனக்கு மிகுந்த மகிழ்ச்சியை அளிக்கும்"
     },
@@ -219,7 +219,7 @@ export const religiousTranslations: ReligiousTranslations = {
     islam: {
         original: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
         english: "In the name of Allah, the Most Gracious, the Most Merciful",
-        tamil: "அல்லாஹ்வின் பெயரால், மிகவும் கருணை மிக்க, மிகவும் இரக்கமுள்ள"
+        tamil: "அல்லாஹ்வின் பெயரால், ிகவும் கருணை ிக்க, ிகவும் இரக்கமுள்ள"
     },
     hinduism: {
         original: "ॐ श्री गणेशाय नमः",
@@ -287,7 +287,8 @@ export const translateUserInput = (text: string, language: string = 'english'): 
         'at', 'am', 'pm',
         'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
         'january', 'february', 'march', 'april', 'may', 'june', 'july',
-        'august', 'september', 'october', 'november', 'december'
+        'august', 'september', 'october', 'november', 'december',
+        'year', 'time', 'month', 'day', 'hour', 'minute', 'second'
         // Add other specific words if needed, but avoid overly generic keys
     ];
 
