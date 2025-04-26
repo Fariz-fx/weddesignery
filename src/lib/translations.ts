@@ -51,6 +51,14 @@ export const translations: Translations = {
         english: "To our wonderful neighbor",
         tamil: "எங்கள் அருமை அண்டை வீட்டாருக்கு"
     },
+    bridesbrothersFriendTheme: {
+        english: "Hey buddy! I'm thrilled to invite you to my sister's wedding. As my best friend, your presence would mean the world to me on this special day",
+        tamil: "நண்பா! என் சகோதரியின் திருமணத்திற்கு உங்களை அழைக்க மகிழ்ச்சியடைகிறேன். என் சிறந்த நண்பராக, இந்த சிறப்பு நாளில் உங்கள் இருப்பு எனக்கு மிகவும் முக்கியமானது"
+    },
+    bridebrotherworkcolleagueTheme: {
+        english: "I warmly welcome you to my sister's marriage ceremony and ask that you bestow your blessings on us. I would be overjoyed to have your presence",
+        tamil: "எனது தங்கை திருமண விழாவிற்கு உங்களை அன்புடன் வரவேற்கிறேன், உங்கள் ஆசீர்வாதங்களை எங்களுக்கு வழங்குமாறு கேட்டுக்கொள்கிறேன். உங்கள் வருகை எனக்கு மிகுந்த மகிழ்ச்சியை அளிக்கும்"
+    },
     defaultTheme: {
         english: "We joyfully invite",
         tamil: "மகிழ்ச்சியுடன் அழைக்கிறோம்"
