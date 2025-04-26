@@ -266,8 +266,8 @@ export const translateUserInput = (text: string, language: string = 'english'): 
                 const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
                 const month = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
 
-                let tamilDay = translations[dayOfWeek]?.[language] || dayOfWeek; // Use helper safely
-                let tamilMonth = translations[month]?.[language] || month;
+                const tamilDay = translations[dayOfWeek]?.[language] || dayOfWeek; // Use helper safely
+                const tamilMonth = translations[month]?.[language] || month;
 
                 // Format in Tamil style (Adjust format string as needed)
                 // Example: சனிக்கிழமை, ஏப்ரல் 26, 2025
@@ -324,20 +324,5 @@ export const translateUserInput = (text: string, language: string = 'english'): 
             }
         }
     });
-
-
-    // It's generally better *not* to try and translate the entire text if it wasn't a date
-    // and wasn't a direct match earlier. The simple word replacer is too basic for full sentences.
-    // However, if you *must* check for full phrase matches again (less recommended):
-    /*
-    Object.keys(translations).forEach(key => {
-        if (translations[key].english.toLowerCase() === lowerText) {
-             // Be careful, this might overwrite partial replacements done above
-             translatedText = translations[key][language] || text;
-        }
-    });
-    */
-
-
     return translatedText;
 };
