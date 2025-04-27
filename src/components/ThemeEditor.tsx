@@ -62,8 +62,8 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({
     const [themeToDelete, setThemeToDelete] = useState<string | null>(null);
     
     // State for collapsible sections
-    const [isDefaultThemesOpen, setIsDefaultThemesOpen] = useState(true);
-    const [isCustomThemesOpen, setIsCustomThemesOpen] = useState(true);
+    const [isDefaultThemesOpen, setIsDefaultThemesOpen] = useState(false);
+    const [isCustomThemesOpen, setIsCustomThemesOpen] = useState(false);
     
     const [themeData, setThemeData] = useState<{
         name: string;
@@ -191,7 +191,7 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({
     return (
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                <h3 className="text-xl font-semibold">Invitation Themes</h3>
+                <h3 className="text-xl font-semibold">Edit Themes</h3>
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogTrigger asChild>
                         <Button 
@@ -386,7 +386,7 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({
                                             onClick={() => handleDeleteTheme(theme.value)}
                                             title="Delete Theme"
                                         >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                                             <span className="sr-only">Delete Theme</span>
                                         </Button>
                                     </div>
