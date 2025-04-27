@@ -25,6 +25,10 @@ import {
 import { ColorPicker } from "@/components/ui/color-picker";
 import { backgroundTemplates } from "@/lib/background-templates";
 import TamilKeyboard from "./TamilKeyboard";
+import ThemeEditor, { Theme } from "./ThemeEditor";
+import { useThemes } from "@/contexts/ThemeContext";
+import { getTranslation, religiousTranslations } from "@/lib/translations";
+
 interface FormData {
     brideNames: string;
     groomNames: string;
@@ -53,10 +57,9 @@ interface FormData {
     showReligiousText: boolean
 }
 
-import { getTranslation, religiousTranslations } from "@/lib/translations";
-
 export const InvitationForm = () => {
     const { toast } = useToast();
+    const { themes, addTheme, editTheme, deleteTheme } = useThemes(); // Added deleteTheme here
     const [formData, setFormData] = useState<FormData>({
         brideNames: "",
         groomNames: "",
@@ -561,27 +564,35 @@ export const InvitationForm = () => {
                         />
                     </div>
 
-                    <div>
-                        <Label htmlFor="theme">Invitation Theme</Label>
-                        <Select
-                            value={formData.theme}
-                            onValueChange={handleThemeChange}
-                        >
-                            <SelectTrigger className="border-wedding-secondary">
-                                <SelectValue placeholder="Select theme" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="family">Close Family</SelectItem>
-                                <SelectItem value="friends">Best Friends</SelectItem>
-                                 <SelectItem value="work">Work Colleagues</SelectItem>
-                                <SelectItem value="neighbors">Neighbors</SelectItem>
-                                <SelectItem value="bridesbrotherfriends">Bride's Brother Friends</SelectItem>
-                                <SelectItem value="bridesbrotherworkcolleagues">Bride's Brother Work Colleagues</SelectItem> 
-                                 <SelectItem value="elegant">Elegant</SelectItem>
-                                <SelectItem value="modern">Modern</SelectItem>
-                                <SelectItem value="rustic">Rustic</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <div className="space-y-4">
+                        <div>
+                            <Label htmlFor="theme">Invitation Theme</Label>
+                            <Select
+                                value={formData.theme}
+                                onValueChange={handleThemeChange}
+                            >
+                                <SelectTrigger className="border-wedding-secondary">
+                                    <SelectValue placeholder="Select theme" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {themes.map((theme) => (
+                                        <SelectItem key={theme.value} value={theme.value}>
+                                            {theme.name} {theme.isCustom && "(Custom)"}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        
+                        {/* Theme Editor Component */}
+                        <ThemeEditor 
+                            existingThemes={themes}
+                            selectedTheme={formData.theme}
+                            onThemeAdded={addTheme}
+                            onThemeEdited={editTheme}
+                            onThemeDeleted={deleteTheme}
+                            language={formData.language}
+                        />
                     </div>
                     
                     {formData.theme === "family" && (
@@ -707,4 +718,4 @@ export const InvitationForm = () => {
         </div>
         </TooltipProvider>
     );
-};
+} // Add the missing closing brace

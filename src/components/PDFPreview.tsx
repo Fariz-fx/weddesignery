@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import React, { forwardRef } from 'react';
 import { backgroundTemplates } from "@/lib/background-templates";
 import { getTranslation, translateUserInput, religiousTranslations } from "@/lib/translations";
+import { useThemes } from "@/contexts/ThemeContext";
 
 // Helper function to validate and sanitize URLs
 const validateAndSanitizeUrl = (url: string): string => {
@@ -68,23 +69,13 @@ interface PDFPreviewProps {
     };
 }
 
-const getThemeMessage = (theme: string, language: string = 'english') => {
-    switch (theme) {
-        case "family":
-            return getTranslation("familyTheme", language);
-        case "friends":
-            return getTranslation("friendsTheme", language);
-         case "work":
-            return getTranslation("workTheme", language);
-         case "neighbors":
-            return getTranslation("neighborsTheme", language);
-         case "bridesbrotherfriends":
-            return getTranslation("bridesbrotherFriendTheme", language);
-         case "bridesbrotherworkcolleagues":
-            return getTranslation("bridesbrotherworkcolleagueTheme", language);
-        default:
-            return getTranslation("defaultTheme", language);
-    }
+// Use the ThemeContext to get theme messages
+const useThemeMessage = () => {
+    const { getThemeText } = useThemes();
+    
+    return (theme: string, language: string = 'english') => {
+        return getThemeText(theme, language);
+    };
 };
 
 // Helper function to get religious text based on religion and language
@@ -104,6 +95,7 @@ const getReligiousText = (religion: string, language: string = 'english'): { ori
 };
 
 const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, ref) => {
+    const getThemeMessage = useThemeMessage();
     const themeMessage = getThemeMessage(formData.theme, 'english');
     const themeMessageTamil = formData.useSecondaryLanguage ? getThemeMessage(formData.theme, formData.language) : '';
     const religiousText = formData.showReligiousText && formData.religion ? getReligiousText(formData.religion, 'english') : undefined;
