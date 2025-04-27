@@ -21,6 +21,11 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { getTranslation } from "@/lib/translations";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 export interface Theme {
     id: string;
@@ -55,6 +60,10 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({
     const [themeToEdit, setThemeToEdit] = useState<string | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [themeToDelete, setThemeToDelete] = useState<string | null>(null);
+    
+    // State for collapsible sections
+    const [isDefaultThemesOpen, setIsDefaultThemesOpen] = useState(true);
+    const [isCustomThemesOpen, setIsCustomThemesOpen] = useState(true);
     
     const [themeData, setThemeData] = useState<{
         name: string;
@@ -257,12 +266,35 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({
             </div>
 
             {/* Default Themes Section */}
-            <div className="border rounded-md p-4 bg-slate-50/50 mb-6">
-                <h4 className="font-medium mb-3 text-lg flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313-12.454z"></path></svg>
-                    Default Themes
-                </h4>
-                <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+            <Collapsible 
+                open={isDefaultThemesOpen} 
+                onOpenChange={setIsDefaultThemesOpen}
+                className="border rounded-md p-4 bg-slate-50/50 mb-6 transition-all duration-200"
+            >
+                <div className="flex justify-between items-center">
+                    <CollapsibleTrigger className="flex items-center w-full text-left">
+                        <h4 className="font-medium text-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313-12.454z"></path></svg>
+                            Default Themes
+                            <svg 
+                                xmlns="http://www.w3.org/2000/svg" 
+                                width="16" 
+                                height="16" 
+                                viewBox="0 0 24 24" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                strokeWidth="2" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                className={`ml-2 transition-transform duration-200 ${isDefaultThemesOpen ? 'rotate-180' : 'rotate-0'}`}
+                            >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </h4>
+                    </CollapsibleTrigger>
+                </div>
+                <CollapsibleContent className="mt-3">
+                    <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                     {existingThemes
                         .filter(theme => !theme.isCustom)
                         .map(theme => (
@@ -297,12 +329,39 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({
                             </div>
                         ))
                     }
-                </div>
-            </div>
+                    </div>
+                </CollapsibleContent>
+            </Collapsible>
 
             {/* Custom Themes Section */}
-            <div className="border rounded-md p-4 bg-slate-50/50">
-                <h4 className="font-medium mb-3 text-lg flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>Your Custom Themes</h4>
+            <Collapsible 
+                open={isCustomThemesOpen} 
+                onOpenChange={setIsCustomThemesOpen}
+                className="border rounded-md p-4 bg-slate-50/50 transition-all duration-200"
+            >
+                <div className="flex justify-between items-center">
+                    <CollapsibleTrigger className="flex items-center w-full text-left">
+                        <h4 className="font-medium text-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            Your Custom Themes
+                            <svg 
+                                xmlns="http://www.w3.org/2000/svg" 
+                                width="16" 
+                                height="16" 
+                                viewBox="0 0 24 24" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                strokeWidth="2" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                className={`ml-2 transition-transform duration-200 ${isCustomThemesOpen ? 'rotate-180' : 'rotate-0'}`}
+                            >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </h4>
+                    </CollapsibleTrigger>
+                </div>
+                <CollapsibleContent className="mt-3">
                 {existingThemes.filter(theme => theme.isCustom).length > 0 ? (
                     <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                         {existingThemes
@@ -368,7 +427,8 @@ const ThemeEditor: React.FC<ThemeEditorProps> = ({
                         <p className="text-sm text-gray-500 mb-4">Click the "Add New Theme" button to create your first custom theme</p>
                     </div>
                 )}
-            </div>
+                </CollapsibleContent>
+            </Collapsible>
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
