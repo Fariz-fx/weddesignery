@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { Link, useNavigate } from 'react-router-dom'; // Import Link and useNavigate
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,6 +61,12 @@ interface FormData {
 export const InvitationForm = () => {
     const { toast } = useToast();
     const { themes, addTheme, editTheme, deleteTheme } = useThemes(); // Added deleteTheme here
+    const navigate = useNavigate();
+    
+    const navigateToBulk = () => {
+        navigate('/bulk');
+    };
+    
     const [formData, setFormData] = useState<FormData>({
         brideNames: "",
         groomNames: "",
@@ -290,9 +297,14 @@ export const InvitationForm = () => {
     return (
         <TooltipProvider>
         <div className="w-full max-w-4xl mx-auto p-6 space-y-8 animate-fadeIn">
-            <h1 className="text-3xl font-semibold text-wedding-text text-center mb-8">
-                Create Your Wedding Invitation
-            </h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-semibold text-wedding-text text-center">
+                    Create Your Wedding Invitation
+                </h1>
+                <Button variant="outline" onClick={navigateToBulk}>
+                    Switch to Bulk Mode
+                </Button>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -718,4 +730,4 @@ export const InvitationForm = () => {
         </div>
         </TooltipProvider>
     );
-} // Add the missing closing brace
+}
