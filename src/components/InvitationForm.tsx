@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -45,6 +46,7 @@ interface FormData {
     personalizeInvitation: boolean;
     inviteeName: string;
     personalMessage: string;
+    inviteeNameBold: boolean;
     useCustomization: boolean;
     backgroundColor: string;
     textColor:string;
@@ -76,6 +78,7 @@ export const InvitationForm = () => {
         personalizeInvitation: false,
         inviteeName: "",
         personalMessage: "",
+        inviteeNameBold: true,
         useCustomization: false,
         backgroundColor: "#ffffff",
         textColor: "#333333",
@@ -108,6 +111,10 @@ export const InvitationForm = () => {
 
     const handlePersonalizationToggle = (checked: boolean) => {
         setFormData((prev) => ({ ...prev, personalizeInvitation: checked }));
+    };
+    
+    const handleInviteeNameBoldToggle = (checked: boolean) => {
+        setFormData((prev) => ({ ...prev, inviteeNameBold: checked }));
     };
     const handleCustomizationToggle = (checked: boolean) => {
         setFormData((prev) => ({ ...prev, useCustomization: checked }));
@@ -669,29 +676,42 @@ export const InvitationForm = () => {
                     </div>
 
                     {formData.personalizeInvitation && (
-                        <>
+                        <div className="space-y-4">
                             <div>
-                                <Label htmlFor="inviteeName">Invitee's Name</Label>
+                                <Label htmlFor="inviteeName">
+                                    {getTranslation("inviteeName", formData.language)}
+                                </Label>
                                 <Input
                                     id="inviteeName"
                                     name="inviteeName"
                                     value={formData.inviteeName}
                                     onChange={handleInputChange}
-                                    className="border-wedding-secondary"
+                                    placeholder={getTranslation("inviteeNamePlaceholder", formData.language)}
                                 />
                             </div>
+                            <div className="flex items-center space-x-2">
+                                <Switch
+                                    id="inviteeNameBold"
+                                    checked={formData.inviteeNameBold}
+                                    onCheckedChange={handleInviteeNameBoldToggle}
+                                />
+                                <Label htmlFor="inviteeNameBold">
+                                    Make invitee name bold
+                                </Label>
+                            </div>
                             <div>
-                                <Label htmlFor="personalMessage">Personal Message</Label>
-                                <Input
+                                <Label htmlFor="personalMessage">
+                                    {getTranslation("personalMessage", formData.language)}
+                                </Label>
+                                <Textarea
                                     id="personalMessage"
                                     name="personalMessage"
                                     value={formData.personalMessage}
                                     onChange={handleInputChange}
-                                     className="border-wedding-secondary"
-                                    placeholder="Add a personal message..."
+                                    placeholder={getTranslation("personalMessagePlaceholder", formData.language)}
                                 />
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
 

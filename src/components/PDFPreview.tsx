@@ -55,6 +55,7 @@ interface PDFPreviewProps {
         personalizeInvitation: boolean;
         inviteeName: string;
         personalMessage: string;
+        inviteeNameBold?: boolean; // Add option to make invitee name bold
         useCustomization: boolean;
         backgroundColor:string;
         textColor:string;
@@ -172,7 +173,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                             
                             {formData.personalizeInvitation && formData.inviteeName && (
                                 <h2 className="text-xl my-4" style={{color: formData.textColor || '#333333'}}>
-                                    {themeMessage} {formData.inviteeName},
+                                    {themeMessage} <span style={{fontWeight: formData.inviteeNameBold ? 'bold' : 'normal'}}>{formData.inviteeName}</span>,
                                 </h2>
                             )}
 
@@ -276,7 +277,7 @@ const PDFPreview = forwardRef<HTMLDivElement, PDFPreviewProps>(({ formData }, re
                             
                             {formData.personalizeInvitation && formData.inviteeName && (
                                 <h2 className="text-xl my-4" style={{color: formData.textColor || '#333333'}}>
-                                    {themeMessageTamil} {formData.inviteeName},
+                                    {themeMessageTamil} <span style={{fontWeight: formData.inviteeNameBold ? 'bold' : 'normal'}}>{formData.inviteeName}</span>,
                                 </h2>
                             )}
 
