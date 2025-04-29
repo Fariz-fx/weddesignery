@@ -679,14 +679,14 @@ export const InvitationForm = () => {
                         <div className="space-y-4">
                             <div>
                                 <Label htmlFor="inviteeName">
-                                    {getTranslation("inviteeName", formData.language)}
+                                Invitee's Name
                                 </Label>
                                 <Input
                                     id="inviteeName"
                                     name="inviteeName"
                                     value={formData.inviteeName}
                                     onChange={handleInputChange}
-                                    placeholder={getTranslation("inviteeNamePlaceholder", formData.language)}
+                                    placeholder={getTranslation("Provide Name of Invitee", formData.language)}
                                 />
                             </div>
                             <div className="flex items-center space-x-2">
@@ -701,14 +701,14 @@ export const InvitationForm = () => {
                             </div>
                             <div>
                                 <Label htmlFor="personalMessage">
-                                    {getTranslation("personalMessage", formData.language)}
+                                    Invitee's Personal Message
                                 </Label>
                                 <Textarea
                                     id="personalMessage"
                                     name="personalMessage"
                                     value={formData.personalMessage}
                                     onChange={handleInputChange}
-                                    placeholder={getTranslation("personalMessagePlaceholder", formData.language)}
+                                    placeholder={getTranslation("Provide Personal touch message for invitee", formData.language)}
                                 />
                             </div>
                         </div>
