@@ -679,7 +679,7 @@ export const InvitationForm = () => {
                         <div className="space-y-4">
                             <div>
                                 <Label htmlFor="inviteeName">
-                                    Invitee Name
+                                Invitee's Name
                                 </Label>
                                 <Input
                                     id="inviteeName"
